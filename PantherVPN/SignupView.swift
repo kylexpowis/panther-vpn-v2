@@ -97,15 +97,10 @@ struct SignupView: View {
                         .bold()
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(
-                            LinearGradient(
-                                gradient: Gradient(colors: [.black, .gray]),
-                                startPoint: .bottom,
-                                endPoint: .top
-                            )
-                        )
+                        .background(Color(hex: "#609bd1"))
                         .cornerRadius(8)
                 }
+
                 .padding(.top)
             }
             .padding()

@@ -52,15 +52,10 @@ struct ContentView: View {
                             .fontWeight(.bold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.black, Color.gray]),
-                                    startPoint: .bottom,
-                                    endPoint: .top
-                                )
-                            )
+                            .background(Color(hex: "#609bd1"))
                             .cornerRadius(8)
                     }
+
 
                     HStack(spacing: 4) {
                         Text("Don’t have an account?")
