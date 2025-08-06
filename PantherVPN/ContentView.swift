@@ -25,7 +25,7 @@ struct ContentView: View {
 
                     Image("panthertextlogo1")
                         .resizable()
-                        .frame(width: 220, height: 32)
+                        .frame(width: 220, height: 35)
                         .aspectRatio(contentMode: .fit)
 
                     TextField("Username", text: $username)
@@ -38,14 +38,13 @@ struct ContentView: View {
                         .background(Color.white)
                         .cornerRadius(8)
 
-                    HStack {
-                        Toggle(isOn: $rememberMe) {
-                            Text("Remember Me")
-                                .foregroundColor(.white)
-                        }
-                        .toggleStyle(CheckboxToggleStyle())
-                        .frame(width: 140, alignment: .leading)
+                    Toggle(isOn: $rememberMe) {
+                        Text("Remember Me")
+                            .foregroundColor(.white)
                     }
+                    .toggleStyle(CheckboxToggleStyle())
+                    .padding(.leading, 4)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                     Button(action: handleLogin) {
                         Text("Log In")
