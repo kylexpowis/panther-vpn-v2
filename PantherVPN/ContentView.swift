@@ -8,14 +8,80 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var username: String = ""
+    @State private var password: String = ""
+    @State private var rememberMe: Bool = false
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+
+                VStack(spacing: 20) {
+                    Image("transparentpanthertemplogo")
+                        .resizable()
+                        .frame(width: 120, height: 120)
+                        .aspectRatio(contentMode: .fit)
+
+                    Image("panthertextlogo1")
+                        .resizable()
+                        .frame(width: 220, height: 32)
+                        .aspectRatio(contentMode: .fit)
+
+                    TextField("Username", text: $username)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(8)
+
+                    SecureField("Password", text: $password)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(8)
+
+                    HStack {
+                        Toggle(isOn: $rememberMe) {
+                            Text("Remember Me")
+                                .foregroundColor(.white)
+                        }
+                        .toggleStyle(CheckboxToggleStyle())
+                        .frame(width: 140, alignment: .leading)
+                    }
+
+                    Button(action: handleLogin) {
+                        Text("Log In")
+                            .foregroundColor(.white)
+                            .fontWeight(.bold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.black, Color.gray]),
+                                    startPoint: .bottom,
+                                    endPoint: .top
+                                )
+                            )
+                            .cornerRadius(8)
+                    }
+
+                    HStack(spacing: 4) {
+                        Text("Don’t have an account?")
+                            .foregroundColor(.gray)
+
+                        NavigationLink(destination: SignupView()) {
+                            Text("Sign Up")
+                                .foregroundColor(.blue)
+                                .underline()
+                        }
+                    }
+                    .padding(.top, 8)
+                }
+                .padding()
+            }
         }
-        .padding()
+    }
+
+    func handleLogin() {
+        print("Logging in with \(username), remember me: \(rememberMe)")
     }
 }
 
