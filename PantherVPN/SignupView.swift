@@ -17,6 +17,8 @@ struct SignupView: View {
     @State private var selectedPlan = "1_month"
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var isLoggedIn = false
+
 
     let plans = [
         ("1 Month £3.99", "1_month"),
@@ -114,21 +116,29 @@ struct SignupView: View {
     }
 
     func handleSignup() {
-        guard !username.isEmpty, !password.isEmpty, !confirmPassword.isEmpty else {
-            alertMessage = "Please fill all fields."
+        guard !username.isEmpty, !password.isEmpty else {
+            alertMessage = "Please fill in all fields."
             showAlert = true
             return
         }
 
-        guard password == confirmPassword else {
-            alertMessage = "Passwords do not match."
-            showAlert = true
-            return
-        }
+        let email = "\(username)@vpn.fake"
+        let client = SupabaseManager.shared.client
 
-        // TODO: Call your Supabase signup logic here
-        print("Signing up \(username) for plan \(selectedPlan)")
+        Task {
+            do {
+                _ = try await client.auth.signUp(email: email, password: password)
+                await MainActor.run { isLoggedIn = true }
+            } catch {
+                await MainActor.run {
+                    alertMessage = error.localizedDescription
+                    showAlert = true
+                }
+            }
+        }
     }
+
+
 }
 
 #Preview {

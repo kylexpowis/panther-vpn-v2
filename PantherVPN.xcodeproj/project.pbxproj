@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1C9809AA2E4BE2AF0081BAFD /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9809A92E4BE2AF0081BAFD /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1C4B778A2E4372D000AC3D72 /* PantherVPN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PantherVPN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C9809AA2E4BE2AF0081BAFD /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33,6 +38,7 @@
 			isa = PBXGroup;
 			children = (
 				1C4B778C2E4372D000AC3D72 /* PantherVPN */,
+				1C9809A82E4BE2AF0081BAFD /* Frameworks */,
 				1C4B778B2E4372D000AC3D72 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +49,13 @@
 				1C4B778A2E4372D000AC3D72 /* PantherVPN.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1C9809A82E4BE2AF0081BAFD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -65,6 +78,7 @@
 			);
 			name = PantherVPN;
 			packageProductDependencies = (
+				1C9809A92E4BE2AF0081BAFD /* Supabase */,
 			);
 			productName = PantherVPN;
 			productReference = 1C4B778A2E4372D000AC3D72 /* PantherVPN.app */;
@@ -94,6 +108,9 @@
 			);
 			mainGroup = 1C4B77812E4372D000AC3D72;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1C71D1FF2E44EB51002F105D /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1C4B778B2E4372D000AC3D72 /* Products */;
 			projectDirPath = "";
@@ -322,6 +339,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1C71D1FF2E44EB51002F105D /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase-community/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1C9809A92E4BE2AF0081BAFD /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C71D1FF2E44EB51002F105D /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1C4B77822E4372D000AC3D72 /* Project object */;
 }
