@@ -63,7 +63,7 @@ struct HomeView: View {
 
                     Image("panthertextlogo1")
                         .resizable()
-                        .frame(width: 220, height: 35)
+                        .frame(width: 220, height: 32)
                         .aspectRatio(contentMode: .fit)
 
                     Text("Select a server")
