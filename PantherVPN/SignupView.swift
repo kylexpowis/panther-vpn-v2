@@ -45,7 +45,7 @@ struct SignupView: View {
                     .font(.title)
                     .padding(.bottom, 8)
 
-                Group {
+                Group {  
                     TextField("Username", text: $username)
                     SecureField("Password", text: $password)
                     SecureField("Confirm Password", text: $confirmPassword)
