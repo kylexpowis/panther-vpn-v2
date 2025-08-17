@@ -130,7 +130,7 @@ struct SignupView: View {
                             RoundedRectangle(cornerRadius: 16)
                                 .fill(Color.accentColor)
                         )
-                        .shadow(color: Color.accentColor.opacity(0.6), radius: 12, y: 6)
+                        .shadow(color: Color.accentColor.opacity(0.35), radius: 8, y: 4) // softer glow
                 }
                 .padding(.top)
             }
