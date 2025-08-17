@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var selectedServer = "New York, USA"
+    @State private var selectedServer = "New York"   // match list name
     @State private var showDropdown = false
 
-    // Now each server can have an optional tag
     struct Server: Identifiable {
         let id = UUID()
         let name: String
@@ -19,10 +18,10 @@ struct HomeView: View {
     }
 
     let servers: [Server] = [
-        .init(name: "New York", tag: nil),
-        .init(name: "Stockholm", tag: "Coming Soon"),
-        .init(name: "Warsaw", tag: "Coming Soon"),
-        .init(name: "Tokyo", tag: "Coming Soon")
+        .init(name: "New York",   tag: nil),
+        .init(name: "Stockholm",  tag: "Coming Soon"),
+        .init(name: "Warsaw",     tag: "Coming Soon"),
+        .init(name: "Tokyo",      tag: "Coming Soon")
     ]
 
     var body: some View {
@@ -81,16 +80,13 @@ struct HomeView: View {
                         .foregroundColor(.white)
                         .font(.headline)
 
-                    // Server selectors (3 stacked cards with tags)
+                    // Server selectors (stacked cards with tags + flag)
                     VStack(spacing: 12) {
                         ForEach(servers) { server in
                             serverCard(server,
                                        isSelected: server.name == selectedServer)
-                            .onTapGesture {
-                                if server.tag != "Coming Soon" {
-                                    selectedServer = server.name
-                                }
-                            }
+                            .contentShape(Rectangle()) // make entire card tappable
+                            .onTapGesture { selectedServer = server.name } // allow selecting any server
                         }
                     }
                     .frame(maxWidth: 320)
@@ -116,7 +112,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Server Card (with tag support)
+    // MARK: - Server Card (with tag + right-side flag emoji only)
     @ViewBuilder
     private func serverCard(_ server: Server, isSelected: Bool) -> some View {
         HStack(spacing: 12) {
@@ -137,6 +133,11 @@ struct HomeView: View {
             }
 
             Spacer()
+
+            // Flag emoji on the right (no circle background)
+            Text(flagEmoji(for: server.name))
+                .font(.system(size: 22))
+                .padding(.trailing, 4)
         }
         .padding(14)
         .background(
@@ -149,6 +150,17 @@ struct HomeView: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
         )
+    }
+
+    // MARK: - Flag mapping
+    private func flagEmoji(for name: String) -> String {
+        switch name {
+        case "New York":   return "🇺🇸"
+        case "Stockholm":  return "🇸🇪"
+        case "Warsaw":     return "🇵🇱"
+        case "Tokyo":      return "🇯🇵"
+        default:           return ""
+        }
     }
 
     // MARK: - Actions
@@ -167,6 +179,8 @@ struct HomeView: View {
         .tint(.blue)
         .preferredColorScheme(.dark)
 }
+
+
 
 
 
