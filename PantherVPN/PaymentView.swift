@@ -13,25 +13,29 @@ import CoreImage.CIFilterBuiltins
 struct Plan: Identifiable, Equatable {
     let id = UUID()
     let name: String
-    let price: String       // display only
-    let period: String      // e.g. "per month"
-    let tag: String?        // e.g. "Best Value"
+    let price: String
+    let period: String
+    let tag: String?
 }
 
 enum PaymentMethod: String, CaseIterable, Identifiable {
     case card = "Card"
     case paypal = "PayPal"
     case btc = "BTC"
-    case xmr = "Monero"
+    case xmr = "XMR"
+    case sol = "SOL"
+    case xrp = "XRP"
 
     var id: String { rawValue }
 
     var systemIcon: String {
         switch self {
         case .card:   return "creditcard"
-        case .paypal: return "link"                 // SF Symbols doesn’t have PayPal; use link icon
+        case .paypal: return "link"
         case .btc:    return "bitcoinsign.circle"
         case .xmr:    return "lock.circle"
+        case .sol:    return "circle.grid.cross"   // placeholder symbol
+        case .xrp:    return "waveform.circle"     // placeholder symbol
         }
     }
 }
@@ -40,9 +44,9 @@ enum PaymentMethod: String, CaseIterable, Identifiable {
 
 struct PaymentView: View {
     private let plans: [Plan] = [
-        .init(name: "1 Month",  price: "£9.99",  period: "/mo",   tag: nil),
-        .init(name: "3 Months", price: "£24.99", period: "/3 mo", tag: "Popular"),
-        .init(name: "12 Months", price: "£79.99", period: "/yr",  tag: "Best Value")
+        .init(name: "1 Month",  price: "£2.99",  period: "/mo",   tag: nil),
+        .init(name: "3 Months", price: "£8.97",  period: "/3 mo", tag: "Popular"),
+        .init(name: "12 Months", price: "£34.99", period: "/yr",  tag: "Best Value")
     ]
 
     @State private var selectedPlanIndex = 1
@@ -58,18 +62,21 @@ struct PaymentView: View {
         ScrollView {
             VStack(spacing: 20) {
 
+                // Empty placeholder instead of title
+                Color.clear.frame(height: 0)
+
                 // Header
                 VStack(spacing: 6) {
                     Text("Choose Your Plan")
                         .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(.primary)
+                        .foregroundColor(.white)
                     Text("Secure high-speed VPN. Cancel anytime.")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(.gray)
                 }
                 .padding(.top, 12)
 
-                // Plans (segmented cards)
+                // Plans
                 VStack(spacing: 12) {
                     ForEach(plans.indices, id: \.self) { i in
                         planCard(plans[i], isSelected: i == selectedPlanIndex)
@@ -77,10 +84,11 @@ struct PaymentView: View {
                     }
                 }
 
-                // Payment method selector
+                // Payment methods
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Payment Method")
                         .font(.headline)
+                        .foregroundColor(.white)
 
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2), spacing: 12) {
                         ForEach(PaymentMethod.allCases) { method in
@@ -102,22 +110,21 @@ struct PaymentView: View {
                     .padding(.vertical, 14)
                     .background(RoundedRectangle(cornerRadius: 16).fill(Color.accentColor))
                     .foregroundColor(.white)
-                    .shadow(radius: 8, y: 6)
+                    .shadow(color: Color.accentColor.opacity(0.6), radius: 12, y: 6)
                 }
                 .disabled(isProcessing)
                 .padding(.top, 8)
 
                 if let errorMessage {
                     Text(errorMessage)
-                        .foregroundStyle(.red)
+                        .foregroundColor(.red)
                         .font(.subheadline)
                         .padding(.top, 4)
                 }
             }
             .padding(20)
         }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Subscribe")
+        .background(Color.black.ignoresSafeArea())
         .sheet(isPresented: $showingCryptoSheet) {
             CryptoSheetView(
                 ticker: cryptoTicker,
@@ -135,34 +142,34 @@ struct PaymentView: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
-                    Text(plan.name).font(.headline)
+                    Text(plan.name).font(.headline).foregroundColor(.white)
                     if let tag = plan.tag {
                         Text(tag)
                             .font(.caption2).bold()
                             .padding(.horizontal, 6).padding(.vertical, 2)
-                            .background(Capsule().fill(Color.accentColor.opacity(0.12)))
-                            .foregroundStyle(Color.accentColor)
+                            .background(Capsule().fill(Color.accentColor.opacity(0.15)))
+                            .foregroundColor(Color.accentColor)
                     }
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(plan.price).font(.system(size: 22, weight: .semibold))
-                    Text(plan.period).font(.subheadline).foregroundStyle(.secondary)
+                    Text(plan.price).font(.system(size: 22, weight: .semibold)).foregroundColor(.white)
+                    Text(plan.period).font(.subheadline).foregroundColor(.gray)
                 }
             }
             Spacer()
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+                .foregroundColor(isSelected ? Color.accentColor : .gray)
                 .font(.system(size: 24, weight: .semibold))
         }
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(.background)
-                .shadow(color: isSelected ? Color.accentColor.opacity(0.15) : .black.opacity(0.06), radius: 10, y: 6)
+                .fill(Color.black)
+                .shadow(color: isSelected ? Color.accentColor.opacity(0.25) : .black.opacity(0.8), radius: 10, y: 6)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(isSelected ? Color.accentColor : Color.secondary.opacity(0.2), lineWidth: 1)
+                .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
         )
     }
 
@@ -171,20 +178,21 @@ struct PaymentView: View {
         HStack(spacing: 12) {
             Image(systemName: method.systemIcon)
                 .font(.system(size: 22, weight: .semibold))
-            Text(method.rawValue).font(.headline)
+                .foregroundColor(.white)
+            Text(method.rawValue).font(.headline).foregroundColor(.white)
             Spacer()
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+                .foregroundColor(isSelected ? Color.accentColor : .gray)
         }
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(.background)
-                .shadow(color: isSelected ? Color.accentColor.opacity(0.15) : .black.opacity(0.06), radius: 10, y: 6)
+                .fill(Color.black)
+                .shadow(color: isSelected ? Color.accentColor.opacity(0.25) : .black.opacity(0.8), radius: 10, y: 6)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(isSelected ? Color.accentColor : Color.secondary.opacity(0.2), lineWidth: 1)
+                .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
         )
     }
 
@@ -198,25 +206,35 @@ struct PaymentView: View {
 
         switch selectedMethod {
         case .card:
-            // TODO: Present your real card sheet (Stripe SDK suggested)
             isProcessing = false
             errorMessage = "Card flow not wired yet. Hook up Stripe Checkout/PaymentSheet."
 
         case .paypal:
-            // TODO: Open PayPal Checkout URL from your backend
             isProcessing = false
             openURL("https://your-backend.example.com/paypal/checkout?plan=\(plan.name)")
 
-        case .btc, .xmr:
-            // Ask your backend for a unique address+amount, then show QR
-            // For now we demo with placeholders:
+        case .btc, .xmr, .sol, .xrp:
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                 isProcessing = false
-                cryptoTicker = (selectedMethod == .btc) ? "BTC" : "XMR"
-                cryptoAmount = (selectedMethod == .btc) ? "0.00042" : "0.12"
-                cryptoAddress = (selectedMethod == .btc)
-                ? "bc1qyourbtcdepositaddressgeneratedbybackend"
-                : "47gYourMoneroIntegratedAddrFromBackend"
+                switch selectedMethod {
+                case .btc:
+                    cryptoTicker = "BTC"
+                    cryptoAmount = "0.00042"
+                    cryptoAddress = "bc1qyourbtcdepositaddressgeneratedbybackend"
+                case .xmr:
+                    cryptoTicker = "XMR"
+                    cryptoAmount = "0.12"
+                    cryptoAddress = "47gYourMoneroIntegratedAddrFromBackend"
+                case .sol:
+                    cryptoTicker = "SOL"
+                    cryptoAmount = "1.25"
+                    cryptoAddress = "YourSolanaWalletAddressFromBackend"
+                case .xrp:
+                    cryptoTicker = "XRP"
+                    cryptoAmount = "22.5"
+                    cryptoAddress = "YourRippleWalletAddressFromBackend"
+                default: break
+                }
                 showingCryptoSheet = true
             }
         }
@@ -228,37 +246,39 @@ struct PaymentView: View {
     }
 }
 
-// MARK: - Crypto Sheet (QR + copy)
+// MARK: - Crypto Sheet
 
 struct CryptoSheetView: View {
-    let ticker: String      // "BTC" / "XMR"
-    let amount: String      // display only
+    let ticker: String
+    let amount: String
     let address: String
 
     @State private var copied = false
 
     var body: some View {
         VStack(spacing: 18) {
-            Capsule().frame(width: 36, height: 4).foregroundStyle(.secondary.opacity(0.5)).padding(.top, 8)
+            Capsule().frame(width: 36, height: 4).foregroundColor(.gray).padding(.top, 8)
 
             Text("\(ticker) Payment")
                 .font(.title3).bold()
+                .foregroundColor(.white)
 
             if !amount.isEmpty {
                 Text("Amount: \(amount) \(ticker)")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.gray)
             }
 
             QRView(string: address)
                 .frame(width: 200, height: 200)
                 .padding(8)
-                .background(RoundedRectangle(cornerRadius: 16).fill(.background).shadow(radius: 8, y: 6))
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color.black).shadow(color: Color.accentColor.opacity(0.3), radius: 8, y: 6))
 
             VStack(spacing: 8) {
-                Text("Address").font(.footnote).foregroundStyle(.secondary)
+                Text("Address").font(.footnote).foregroundColor(.gray)
                 Text(address)
                     .font(.footnote)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .textSelection(.enabled)
                     .padding(.horizontal)
@@ -280,7 +300,7 @@ struct CryptoSheetView: View {
             Spacer(minLength: 8)
         }
         .padding(20)
-        .presentationBackground(.ultraThinMaterial)
+        .background(Color.black)
     }
 }
 
@@ -298,7 +318,7 @@ struct QRView: View {
                 .resizable()
                 .scaledToFit()
         } else {
-            Color.secondary.opacity(0.1)
+            Color.gray.opacity(0.3)
         }
     }
 
@@ -318,6 +338,9 @@ struct QRView: View {
 struct PaymentView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack { PaymentView() }
-            .tint(Color.blue)
+            .tint(.blue)
+            .preferredColorScheme(.dark)
     }
 }
+
+
