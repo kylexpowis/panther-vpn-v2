@@ -8,14 +8,21 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var selectedServer = "Panther Server 1"
+    @State private var selectedServer = "New York, USA"
     @State private var showDropdown = false
 
-    let servers = [
-        "New York, USA",
-        "Panther Server 2 (Coming Soon)",
-        "Panther Server 3 (Coming Soon)",
-        "Panther Server 4 (Coming Soon)"
+    // Now each server can have an optional tag
+    struct Server: Identifiable {
+        let id = UUID()
+        let name: String
+        let tag: String?
+    }
+
+    let servers: [Server] = [
+        .init(name: "New York", tag: nil),
+        .init(name: "Stockholm", tag: "Coming Soon"),
+        .init(name: "Warsaw", tag: "Coming Soon"),
+        .init(name: "Tokyo", tag: "Coming Soon")
     ]
 
     var body: some View {
@@ -23,15 +30,11 @@ struct HomeView: View {
             Color.black.ignoresSafeArea()
 
             VStack {
-                // Top-right gear icon
+                // Top-right gear + dropdown
                 HStack {
                     Spacer()
                     VStack(alignment: .trailing, spacing: 10) {
-                        Button(action: {
-                            withAnimation {
-                                showDropdown.toggle()
-                            }
-                        }) {
+                        Button(action: { withAnimation(.spring(response: 0.25)) { showDropdown.toggle() } }) {
                             Image(systemName: "gearshape.fill")
                                 .foregroundColor(.white)
                                 .font(.title2)
@@ -40,13 +43,21 @@ struct HomeView: View {
                         }
 
                         if showDropdown {
-                            VStack(alignment: .leading) {
+                            VStack(alignment: .leading, spacing: 0) {
                                 Button("Log Out", action: handleLogout)
                                     .foregroundColor(.white)
-                                    .padding(10)
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 12)
                             }
-                            .background(Color.gray.opacity(0.9))
-                            .cornerRadius(8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.black)
+                                    .shadow(color: Color.accentColor.opacity(0.25), radius: 10, y: 6)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.gray.opacity(0.6), lineWidth: 1)
+                            )
                             .padding(.trailing)
                         }
                     }
@@ -70,36 +81,34 @@ struct HomeView: View {
                         .foregroundColor(.white)
                         .font(.headline)
 
-                    ZStack {
-                        Color(red: 0.1, green: 0.1, blue: 0.1) // Near black
-                            .cornerRadius(12)
-                            .frame(height: 160)
-
-                        Picker("Select Server", selection: $selectedServer) {
-                            ForEach(servers, id: \.self) { server in
-                                Text(server).tag(server)
+                    // Server selectors (3 stacked cards with tags)
+                    VStack(spacing: 12) {
+                        ForEach(servers) { server in
+                            serverCard(server,
+                                       isSelected: server.name == selectedServer)
+                            .onTapGesture {
+                                if server.tag != "Coming Soon" {
+                                    selectedServer = server.name
+                                }
                             }
                         }
-                        .pickerStyle(.wheel)
-                        .frame(height: 160)
-                        .clipped()
-                        .colorScheme(.dark)
                     }
                     .frame(maxWidth: 320)
 
-
-
+                    // Connect button
                     Button(action: handleConnect) {
                         Text("Connect")
                             .foregroundColor(.white)
                             .font(.headline)
                             .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color(hex: "609BD1"))
-                            .cornerRadius(8)
+                            .padding(.vertical, 14)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color.accentColor)
+                            )
+                            .shadow(color: Color.accentColor.opacity(0.35), radius: 10, y: 6)
                     }
                     .frame(maxWidth: 320)
-
                 }
 
                 Spacer()
@@ -107,16 +116,57 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Server Card (with tag support)
+    @ViewBuilder
+    private func serverCard(_ server: Server, isSelected: Bool) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundColor(isSelected ? Color.accentColor : .gray)
+
+            Text(server.name)
+                .font(.headline)
+                .foregroundColor(.white)
+
+            if let tag = server.tag {
+                Text(tag)
+                    .font(.caption2).bold()
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(Capsule().fill(Color.accentColor.opacity(0.15)))
+                    .foregroundColor(Color.accentColor)
+            }
+
+            Spacer()
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black)
+                .shadow(color: isSelected ? Color.accentColor.opacity(0.25) : .black.opacity(0.8),
+                        radius: 10, y: 6)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
+        )
+    }
+
+    // MARK: - Actions
     func handleConnect() {
         print("Connecting to \(selectedServer)")
     }
 
     func handleLogout() {
-        print("Logging out...")
+        print("Logging out…")
         // Add Supabase logout logic later
     }
 }
 
 #Preview {
     HomeView()
+        .tint(.blue)
+        .preferredColorScheme(.dark)
 }
+
+
+
