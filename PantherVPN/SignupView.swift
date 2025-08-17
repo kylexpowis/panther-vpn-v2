@@ -77,22 +77,7 @@ struct SignupView: View {
                         }
                 }
 
-                Text("Select Subscription:")
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top)
-
-                Picker("Select Plan", selection: $selectedPlan) {
-                    ForEach(plans, id: \.1) { plan in
-                        Text(plan.0)
-                            .foregroundColor(.white)
-                            .tag(plan.1)
-                    }
-                }
-                .pickerStyle(WheelPickerStyle())
-                .frame(height: 150)
-                .clipped()
-
+            
                 Button(action: handleSignup) {
                     Text("Continue to Payment")
                         .foregroundColor(.white)
