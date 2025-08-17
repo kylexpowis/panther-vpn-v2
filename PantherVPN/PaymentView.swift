@@ -103,14 +103,14 @@ struct PaymentView: View {
                 Button(action: handlePay) {
                     HStack(spacing: 8) {
                         if isProcessing { ProgressView().tint(.white) }
-                        Text(isProcessing ? "Processing…" : "Continue to Payment")
+                        Text(isProcessing ? "Processing…" : "Continue")
                             .font(.headline)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(RoundedRectangle(cornerRadius: 16).fill(Color.accentColor))
                     .foregroundColor(.white)
-                    .shadow(color: Color.accentColor.opacity(0.6), radius: 12, y: 6)
+                    .shadow(color: Color.accentColor.opacity(0.35), radius: 8, y: 4) // softer glow
                 }
                 .disabled(isProcessing)
                 .padding(.top, 8)
