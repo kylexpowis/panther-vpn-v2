@@ -8,8 +8,6 @@
 import SwiftUI
 import Supabase
 
-
-
 struct ContentView: View {
     @State private var username: String = ""
     @State private var password: String = ""
@@ -17,6 +15,10 @@ struct ContentView: View {
     @State private var isLoggedIn: Bool = false
     @State private var showAlert: Bool = false
     @State private var alertMessage: String = ""
+
+    // For focused field styling
+    @FocusState private var focusedField: Field?
+    private enum Field { case username, password }
 
     var body: some View {
         NavigationStack {
@@ -37,16 +39,25 @@ struct ContentView: View {
                             .frame(width: 220, height: 32)
                             .aspectRatio(contentMode: .fit)
 
-                        TextField("Username", text: $username)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(8)
+                        // Username
+                        inputField(
+                            text: $username,
+                            placeholder: "Username",
+                            isSecure: false,
+                            isFocused: focusedField == .username
+                        )
+                        .focused($focusedField, equals: .username)
 
-                        SecureField("Password", text: $password)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(8)
+                        // Password
+                        inputField(
+                            text: $password,
+                            placeholder: "Password",
+                            isSecure: true,
+                            isFocused: focusedField == .password
+                        )
+                        .focused($focusedField, equals: .password)
 
+                        // Remember Me
                         Toggle(isOn: $rememberMe) {
                             Text("Remember Me")
                                 .foregroundColor(.white)
@@ -55,16 +66,21 @@ struct ContentView: View {
                         .padding(.leading, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
+                        // Log In button
                         Button(action: handleLogin) {
                             Text("Log In")
                                 .foregroundColor(.white)
                                 .fontWeight(.bold)
                                 .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color(hex: "#609bd1"))
-                                .cornerRadius(8)
+                                .padding(.vertical, 14)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.accentColor)
+                                )
+                                .shadow(color: Color.accentColor.opacity(0.35), radius: 8, y: 4) // softer glow
                         }
 
+                        // Sign Up link
                         HStack(spacing: 4) {
                             Text("Don’t have an account?")
                                 .foregroundColor(.gray)
@@ -88,6 +104,47 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - Styled input field
+    @ViewBuilder
+    private func inputField(text: Binding<String>,
+                            placeholder: String,
+                            isSecure: Bool,
+                            isFocused: Bool) -> some View {
+
+        let field = Group {
+            if isSecure {
+                SecureField(
+                    "",
+                    text: text,
+                    prompt: Text(placeholder).foregroundColor(.gray)
+                )
+            } else {
+                TextField(
+                    "",
+                    text: text,
+                    prompt: Text(placeholder).foregroundColor(.gray)
+                )
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled(true)
+            }
+        }
+        .foregroundColor(.white) // typed text
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+
+        field
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isFocused ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
+            )
+            .shadow(color: isFocused ? Color.accentColor.opacity(0.15) : .clear, radius: 6, y: 3) // softer glow than Signup
+    }
+
+    // MARK: - Actions
     func handleLogin() {
         guard !username.isEmpty, !password.isEmpty else {
             alertMessage = "Please fill in both fields."
@@ -100,11 +157,10 @@ struct ContentView: View {
 
         Task {
             do {
-                // v2 API
                 _ = try await client.auth.signIn(email: email, password: password)
 
                 if rememberMe {
-                    // store whatever you need locally (e.g., Keychain) if you want
+                    // Optionally persist login (e.g., Keychain)
                 }
                 await MainActor.run { isLoggedIn = true }
             } catch {
@@ -115,10 +171,12 @@ struct ContentView: View {
             }
         }
     }
-
 }
 
 #Preview {
     ContentView()
+        .tint(.blue)
+        .preferredColorScheme(.dark)
 }
+
 
