@@ -13,9 +13,9 @@ struct HomeView: View {
 
     let servers = [
         "New York, USA",
-        "Rio, Brazil",
-        "Warsar Poland",
-        "Tokyo, Japan"
+        "Panther Server 2 (Coming Soon)",
+        "Panther Server 3 (Coming Soon)",
+        "Panther Server 4 (Coming Soon)"
     ]
 
     var body: some View {
