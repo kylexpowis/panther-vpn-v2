@@ -31,11 +31,11 @@ enum PaymentMethod: String, CaseIterable, Identifiable {
     var systemIcon: String {
         switch self {
         case .card:   return "creditcard"
-        case .paypal: return "link"
+        case .paypal: return "dollarsign.circle"
         case .btc:    return "bitcoinsign.circle"
         case .xmr:    return "lock.circle"
-        case .sol:    return "circle.grid.cross"   // placeholder symbol
-        case .xrp:    return "waveform.circle"     // placeholder symbol
+        case .sol:    return "s.circle"
+        case .xrp:    return "x.circle"
         }
     }
 }
