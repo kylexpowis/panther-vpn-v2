@@ -7,6 +7,13 @@
 
 import SwiftUI
 import Supabase
+import UIKit   // ← for UIDevice.current.name
+
+private struct RegisterDeviceParams: Encodable {
+    let p_device_id: String
+    let p_platform: String
+    let p_name: String
+}
 
 struct ContentView: View {
     @State private var username: String = ""
@@ -157,20 +164,37 @@ struct ContentView: View {
 
         Task {
             do {
+                // 1) sign in
                 _ = try await client.auth.signIn(email: email, password: password)
 
-                if rememberMe {
-                    // Optionally persist login (e.g., Keychain)
-                }
+                // 2) register this device (DB enforces max 5)
+                let deviceId = DeviceID.current()
+                let params = RegisterDeviceParams(
+                    p_device_id: deviceId,
+                    p_platform: "ios",
+                    p_name: UIDevice.current.name
+                )
+
+                _ = try await client.database
+                    .rpc("register_device", params: params)
+                    .execute()  // we don't need the return row
+
                 await MainActor.run { isLoggedIn = true }
+
             } catch {
+                let msg = error.localizedDescription.lowercased()
+                let friendly = msg.contains("device_limit_exceeded")
+                    ? "You’ve reached the 5-device limit. Remove an old device to continue."
+                    : error.localizedDescription
+
                 await MainActor.run {
-                    alertMessage = error.localizedDescription
+                    alertMessage = friendly
                     showAlert = true
                 }
             }
         }
     }
+
 }
 
 #Preview {

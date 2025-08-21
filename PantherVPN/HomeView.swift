@@ -169,9 +169,23 @@ struct HomeView: View {
     }
 
     func handleLogout() {
+        Task {
+            let client = SupabaseManager.shared.client
+            let deviceId = DeviceID.current()
+
+            // Delete just this device row (for the current user via RLS)
+            try? await client
+                .from("devices")
+                .delete()
+                .eq("device_id", value: deviceId)
+                .execute()
+
+            // Also sign out if desired
+            try? await client.auth.signOut()
+        }
         print("Logging out…")
-        // Add Supabase logout logic later
     }
+
 }
 
 #Preview {
