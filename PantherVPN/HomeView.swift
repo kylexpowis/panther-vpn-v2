@@ -18,7 +18,8 @@ struct HomeView: View {
     }
 
     let servers: [Server] = [
-        .init(name: "New York",   tag: nil),
+        .init(name: "Helsinki",   tag: nil),
+        .init(name: "New York",   tag: "Coming Soon"),
         .init(name: "Stockholm",  tag: "Coming Soon"),
         .init(name: "Warsaw",     tag: "Coming Soon"),
         .init(name: "Tokyo",      tag: "Coming Soon")
@@ -155,6 +156,7 @@ struct HomeView: View {
     // MARK: - Flag mapping
     private func flagEmoji(for name: String) -> String {
         switch name {
+        case "Helsinki":   return "🇫🇮"
         case "New York":   return "🇺🇸"
         case "Stockholm":  return "🇸🇪"
         case "Warsaw":     return "🇵🇱"
