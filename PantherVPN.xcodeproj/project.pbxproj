@@ -46,14 +46,14 @@
 		};
 		1C81E4802E4FE39B004B52D4 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
 				1CB92AF52E5CF8240071EB4C /* VPNPacketTunnel.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -70,6 +70,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1C7AE45B2E60E6A600696403 /* Exceptions for "PantherVPN" folder in "PantherVPN" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 1C4B77892E4372D000AC3D72 /* PantherVPN */;
+		};
 		1CB92AF82E5CF8240071EB4C /* Exceptions for "VPNPacketTunnel" folder in "VPNPacketTunnel" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -82,6 +89,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1C4B778C2E4372D000AC3D72 /* PantherVPN */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1C7AE45B2E60E6A600696403 /* Exceptions for "PantherVPN" folder in "PantherVPN" target */,
+			);
 			path = PantherVPN;
 			sourceTree = "<group>";
 		};
@@ -176,12 +186,12 @@
 /* Begin PBXLegacyTarget section */
 		1C7AE4492E60DC8D00696403 /* WireGuardGoBridge-iOS */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
+			buildArgumentsString = "";
 			buildConfigurationList = 1C7AE44A2E60DC8D00696403 /* Build configuration list for PBXLegacyTarget "WireGuardGoBridge-iOS" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = "~/Developer/wireguard-apple/Sources/WireGuardKitGo";
+			buildWorkingDirectory = "/Users/kylepowis/Developer/wireguard-apple/Sources/WireGuardKitGo";
 			dependencies = (
 			);
 			name = "WireGuardGoBridge-iOS";
@@ -371,6 +381,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMPILER_INDEX_STORE_ENABLE = Default;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -436,6 +447,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMPILER_INDEX_STORE_ENABLE = Default;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -528,8 +540,11 @@
 				DEVELOPMENT_TEAM = MF2KZ4D2GH;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				NEW_SETTING1 = "";
+				NEW_SETTING2 = "";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
+				PATH = " ${PATH}:/opt/homebrew/bin:/opt/homebrew/opt/go/bin:/usr/local/bin\n";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -540,8 +555,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = MF2KZ4D2GH;
+				NEW_SETTING1 = "";
+				NEW_SETTING2 = "";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
+				PATH = " ${PATH}:/opt/homebrew/bin:/opt/homebrew/opt/go/bin:/usr/local/bin\n";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -554,7 +572,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = MF2KZ4D2GH;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VPNPacketTunnel/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VPNPacketTunnel;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -582,7 +600,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = MF2KZ4D2GH;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VPNPacketTunnel/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VPNPacketTunnel;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
