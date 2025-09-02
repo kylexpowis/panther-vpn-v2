@@ -7,30 +7,52 @@
 
 import NetworkExtension
 
-class PacketTunnelProvider: NEPacketTunnelProvider {
-
-    override func startTunnel(options: [String : NSObject]?, completionHandler: @escaping (Error?) -> Void) {
-        // Add code here to start the process of connecting the tunnel.
-    }
+final class PacketTunnelProvider: NEPacketTunnelProvider {
     
-    override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-        // Add code here to start the process of stopping the tunnel.
-        completionHandler()
-    }
-    
-    override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)?) {
-        // Add code here to handle the message.
-        if let handler = completionHandler {
-            handler(messageData)
+    override func startTunnel(options: [String : NSObject]?,
+                              completionHandler: @escaping (Error?) -> Void) {
+        
+        // Grab wg-quick style config from providerConfiguration
+        guard
+            let proto = protocolConfiguration as? NETunnelProviderProtocol,
+            let config = proto.providerConfiguration?["WgQuickConfig"] as? String
+        else {
+            completionHandler(NSError(domain: "PacketTunnel", code: -1,
+                                      userInfo: [NSLocalizedDescriptionKey: "Missing WgQuickConfig"]))
+            return
+        }
+        
+        // TODO: Parse `config` and bring up WireGuard interface here
+        // You likely already have WireGuardKit integrated, so this is where
+        // you'd hand off to WG routines with `config`.
+        
+        // Minimal placeholder so iOS thinks the tunnel is up
+        let settings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "127.0.0.1")
+        settings.ipv4Settings = NEIPv4Settings(addresses: ["10.0.0.2"], subnetMasks: ["255.255.255.255"])
+        settings.dnsSettings = NEDNSSettings(servers: ["1.1.1.1"])
+        
+        setTunnelNetworkSettings(settings) { error in
+            completionHandler(error)
         }
     }
     
+    override func stopTunnel(with reason: NEProviderStopReason,
+                             completionHandler: @escaping () -> Void) {
+        // Stop your WireGuard process here if running
+        completionHandler()
+    }
+    
+    override func handleAppMessage(_ messageData: Data,
+                                   completionHandler: ((Data?) -> Void)?) {
+        completionHandler?(messageData) // echo back
+    }
+    
     override func sleep(completionHandler: @escaping () -> Void) {
-        // Add code here to get ready to sleep.
         completionHandler()
     }
     
     override func wake() {
-        // Add code here to wake up.
+        // Called when device wakes up
     }
 }
+

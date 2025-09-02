@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		1C7AE4432E60D37500696403 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */; };
-		1C7AE4442E60D37500696403 /* NetworkExtension.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		1C7AE4482E60DC3000696403 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1C7AE4472E60DC3000696403 /* WireGuardKit */; };
-		1C7AE4532E60E1A200696403 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1C7AE4522E60E1A200696403 /* WireGuardKit */; };
 		1C9809AA2E4BE2AF0081BAFD /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9809A92E4BE2AF0081BAFD /* Supabase */; };
 		1CB92AF52E5CF8240071EB4C /* VPNPacketTunnel.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1CE6BC6C2E64E3F400BCCCDA /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */; };
+		1CE87A372E627A6900F480E4 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1CE87A362E627A6900F480E4 /* WireGuardKit */; };
+		1CE87A392E627A8A00F480E4 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1CE87A382E627A8A00F480E4 /* WireGuardKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +39,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1C7AE4442E60D37500696403 /* NetworkExtension.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,6 +66,15 @@
 		1C7AE4592E60E27300696403 /* x25519.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = x25519.c; sourceTree = "<group>"; };
 		1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 		1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = VPNPacketTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CE87A282E626D5300F480E4 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		1CE87A292E626D5300F480E4 /* api-apple.go */ = {isa = PBXFileReference; lastKnownFileType = text; path = "api-apple.go"; sourceTree = "<group>"; };
+		1CE87A2A2E626D5300F480E4 /* dummy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dummy.c; sourceTree = "<group>"; };
+		1CE87A2B2E626D5300F480E4 /* go.mod */ = {isa = PBXFileReference; lastKnownFileType = text; path = go.mod; sourceTree = "<group>"; };
+		1CE87A2C2E626D5300F480E4 /* go.sum */ = {isa = PBXFileReference; lastKnownFileType = text; path = go.sum; sourceTree = "<group>"; };
+		1CE87A2D2E626D5300F480E4 /* goruntime-boottime-over-monotonic.diff */ = {isa = PBXFileReference; lastKnownFileType = text; path = "goruntime-boottime-over-monotonic.diff"; sourceTree = "<group>"; };
+		1CE87A2E2E626D5300F480E4 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		1CE87A2F2E626D5300F480E4 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		1CE87A302E626D5300F480E4 /* wireguard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wireguard.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -74,6 +82,10 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Keychain.swift,
+				KeypairManager.swift,
+				Region.swift,
+				WGKeys.swift,
 			);
 			target = 1C4B77892E4372D000AC3D72 /* PantherVPN */;
 		};
@@ -81,6 +93,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				VPNController.swift,
 			);
 			target = 1CB92AEB2E5CF8240071EB4C /* VPNPacketTunnel */;
 		};
@@ -120,7 +133,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C7AE4482E60DC3000696403 /* WireGuardKit in Frameworks */,
+				1CE6BC6C2E64E3F400BCCCDA /* NetworkExtension.framework in Frameworks */,
+				1CE87A372E627A6900F480E4 /* WireGuardKit in Frameworks */,
 				1C9809AA2E4BE2AF0081BAFD /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,7 +143,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C7AE4532E60E1A200696403 /* WireGuardKit in Frameworks */,
+				1CE87A392E627A8A00F480E4 /* WireGuardKit in Frameworks */,
 				1C7AE4432E60D37500696403 /* NetworkExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -175,10 +189,28 @@
 		1C9809A82E4BE2AF0081BAFD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1CE87A312E626D5300F480E4 /* WireGuardKitGo */,
 				1C7AE45A2E60E27300696403 /* WireGuardKitC */,
 				1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1CE87A312E626D5300F480E4 /* WireGuardKitGo */ = {
+			isa = PBXGroup;
+			children = (
+				1CE87A282E626D5300F480E4 /* .gitignore */,
+				1CE87A292E626D5300F480E4 /* api-apple.go */,
+				1CE87A2A2E626D5300F480E4 /* dummy.c */,
+				1CE87A2B2E626D5300F480E4 /* go.mod */,
+				1CE87A2C2E626D5300F480E4 /* go.sum */,
+				1CE87A2D2E626D5300F480E4 /* goruntime-boottime-over-monotonic.diff */,
+				1CE87A2E2E626D5300F480E4 /* Makefile */,
+				1CE87A2F2E626D5300F480E4 /* module.modulemap */,
+				1CE87A302E626D5300F480E4 /* wireguard.h */,
+			);
+			name = WireGuardKitGo;
+			path = "External/wireguard-apple/Sources/WireGuardKitGo";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -190,8 +222,8 @@
 			buildConfigurationList = 1C7AE44A2E60DC8D00696403 /* Build configuration list for PBXLegacyTarget "WireGuardGoBridge-iOS" */;
 			buildPhases = (
 			);
-			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = "/Users/kylepowis/Developer/wireguard-apple/Sources/WireGuardKitGo";
+			buildToolPath = /Applications/Xcode.app/Contents/Developer/usr/bin/make;
+			buildWorkingDirectory = "$(SRCROOT)/External/wireguard-apple/Sources/WireGuardKitGo";
 			dependencies = (
 			);
 			name = "WireGuardGoBridge-iOS";
@@ -223,7 +255,7 @@
 			name = PantherVPN;
 			packageProductDependencies = (
 				1C9809A92E4BE2AF0081BAFD /* Supabase */,
-				1C7AE4472E60DC3000696403 /* WireGuardKit */,
+				1CE87A362E627A6900F480E4 /* WireGuardKit */,
 			);
 			productName = PantherVPN;
 			productReference = 1C4B778A2E4372D000AC3D72 /* PantherVPN.app */;
@@ -248,7 +280,7 @@
 			);
 			name = VPNPacketTunnel;
 			packageProductDependencies = (
-				1C7AE4522E60E1A200696403 /* WireGuardKit */,
+				1CE87A382E627A8A00F480E4 /* WireGuardKit */,
 			);
 			productName = VPNPacketTunnel;
 			productReference = 1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */;
@@ -286,7 +318,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1C71D1FF2E44EB51002F105D /* XCRemoteSwiftPackageReference "supabase-swift" */,
-				1C7AE4512E60E1A200696403 /* XCLocalSwiftPackageReference "External/wireguard-apple" */,
+				1CE87A352E627A3200F480E4 /* XCLocalSwiftPackageReference "External/WireGuardKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1C4B778B2E4372D000AC3D72 /* Products */;
@@ -478,6 +510,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PantherVPN/panthervpn.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PantherVPN/Preview Content\"";
@@ -494,7 +527,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = panthertech.PantherVPN;
+				PRODUCT_BUNDLE_IDENTIFIER = app.panthervpn.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -507,6 +540,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PantherVPN/panthervpn.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PantherVPN/Preview Content\"";
@@ -523,7 +557,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = panthertech.PantherVPN;
+				PRODUCT_BUNDLE_IDENTIFIER = app.panthervpn.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -662,9 +696,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		1C7AE4512E60E1A200696403 /* XCLocalSwiftPackageReference "External/wireguard-apple" */ = {
+		1CE87A352E627A3200F480E4 /* XCLocalSwiftPackageReference "External/WireGuardKit" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "External/wireguard-apple";
+			relativePath = External/WireGuardKit;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -680,18 +714,20 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		1C7AE4472E60DC3000696403 /* WireGuardKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WireGuardKit;
-		};
-		1C7AE4522E60E1A200696403 /* WireGuardKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WireGuardKit;
-		};
 		1C9809A92E4BE2AF0081BAFD /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1C71D1FF2E44EB51002F105D /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		1CE87A362E627A6900F480E4 /* WireGuardKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1CE87A352E627A3200F480E4 /* XCLocalSwiftPackageReference "External/WireGuardKit" */;
+			productName = WireGuardKit;
+		};
+		1CE87A382E627A8A00F480E4 /* WireGuardKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1CE87A352E627A3200F480E4 /* XCLocalSwiftPackageReference "External/WireGuardKit" */;
+			productName = WireGuardKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
