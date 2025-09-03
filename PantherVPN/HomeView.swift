@@ -6,10 +6,16 @@
 //
 
 import SwiftUI
+import NetworkExtension
+import UIKit
 
 struct HomeView: View {
-    @State private var selectedServer = "New York"   // match list name
+    // UI State
+    @State private var selectedServer = "Helsinki"  // default to live region
     @State private var showDropdown = false
+    @State private var isBusy = false
+    @State private var isConnected = false
+    @State private var lastError: String?
 
     struct Server: Identifiable {
         let id = UUID()
@@ -17,8 +23,10 @@ struct HomeView: View {
         let tag: String?
     }
 
+    // Your server list (unchanged visuals)
     let servers: [Server] = [
-        .init(name: "New York",   tag: nil),
+        .init(name: "Helsinki",   tag: nil),
+        .init(name: "New York",   tag: "Coming Soon"),
         .init(name: "Stockholm",  tag: "Coming Soon"),
         .init(name: "Warsaw",     tag: "Coming Soon"),
         .init(name: "Tokyo",      tag: "Coming Soon")
@@ -43,6 +51,13 @@ struct HomeView: View {
 
                         if showDropdown {
                             VStack(alignment: .leading, spacing: 0) {
+                                Button("Copy device pubkey", action: copyPubkey)
+                                    .foregroundColor(.white)
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 12)
+
+                                Divider().background(Color.white.opacity(0.2))
+
                                 Button("Log Out", action: handleLogout)
                                     .foregroundColor(.white)
                                     .padding(.vertical, 10)
@@ -80,39 +95,76 @@ struct HomeView: View {
                         .foregroundColor(.white)
                         .font(.headline)
 
-                    // Server selectors (stacked cards with tags + flag)
+                    // Server selectors
                     VStack(spacing: 12) {
                         ForEach(servers) { server in
                             serverCard(server,
                                        isSelected: server.name == selectedServer)
-                            .contentShape(Rectangle()) // make entire card tappable
-                            .onTapGesture { selectedServer = server.name } // allow selecting any server
+                                .contentShape(Rectangle())
+                                .onTapGesture { selectedServer = server.name }
                         }
                     }
                     .frame(maxWidth: 320)
 
-                    // Connect button
+                    // Connect / Disconnect button
                     Button(action: handleConnect) {
-                        Text("Connect")
-                            .foregroundColor(.white)
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.accentColor)
-                            )
-                            .shadow(color: Color.accentColor.opacity(0.35), radius: 10, y: 6)
+                        HStack(spacing: 8) {
+                            if isBusy { ProgressView().tint(.white) }
+                            Text(buttonTitle)
+                                .foregroundColor(.white)
+                                .font(.headline)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.accentColor)
+                        )
+                        .shadow(color: Color.accentColor.opacity(0.35), radius: 10, y: 6)
                     }
+                    .disabled(regionNameForSelectedServer() == nil || isBusy)
+                    .opacity((regionNameForSelectedServer() == nil) ? 0.5 : 1.0)
                     .frame(maxWidth: 320)
+
+                    // Status line
+                    Text(statusLine)
+                        .font(.footnote)
+                        .foregroundColor(.white.opacity(0.8))
                 }
 
                 Spacer()
             }
         }
+        .alert("VPN Error", isPresented: .constant(lastError != nil), actions: {
+            Button("OK") { lastError = nil }
+        }, message: {
+            Text(lastError ?? "")
+        })
+        .onAppear { Task { await refreshStatus() } }
     }
 
-    // MARK: - Server Card (with tag + right-side flag emoji only)
+    // MARK: - Derived UI
+
+    private var buttonTitle: String {
+        guard regionNameForSelectedServer() != nil else { return "Coming Soon" }
+        if isBusy { return isConnected ? "Disconnecting…" : "Connecting…" }
+        return isConnected ? "Disconnect" : "Connect"
+    }
+
+    private var statusLine: String {
+        guard let name = regionNameForSelectedServer() else { return "Selected region is not yet available." }
+        return isConnected ? "Connected to \(name)" : "Not connected"
+    }
+
+    // Only live region(s) return a name; coming-soon return nil to disable the button
+    private func regionNameForSelectedServer() -> String? {
+        switch selectedServer {
+        case "Helsinki": return "Helsinki"
+        default:         return nil
+        }
+    }
+
+    // MARK: - Server Card (unchanged visuals)
     @ViewBuilder
     private func serverCard(_ server: Server, isSelected: Bool) -> some View {
         HStack(spacing: 12) {
@@ -134,7 +186,6 @@ struct HomeView: View {
 
             Spacer()
 
-            // Flag emoji on the right (no circle background)
             Text(flagEmoji(for: server.name))
                 .font(.system(size: 22))
                 .padding(.trailing, 4)
@@ -152,9 +203,10 @@ struct HomeView: View {
         )
     }
 
-    // MARK: - Flag mapping
+    // MARK: - Flags
     private func flagEmoji(for name: String) -> String {
         switch name {
+        case "Helsinki":   return "🇫🇮"
         case "New York":   return "🇺🇸"
         case "Stockholm":  return "🇸🇪"
         case "Warsaw":     return "🇵🇱"
@@ -164,28 +216,70 @@ struct HomeView: View {
     }
 
     // MARK: - Actions
-    func handleConnect() {
-        print("Connecting to \(selectedServer)")
+
+    private func handleConnect() {
+        guard let regionName = regionNameForSelectedServer() else { return }
+        isBusy = true
+        lastError = nil
+
+        Task {
+            do {
+                // 1) get Supabase user access token (non-optional Session)
+                let client = SupabaseManager.shared.client
+                let session = try await client.auth.session
+                let jwt = session.accessToken
+
+                // 2) call your function to register/get config
+                let reg = try await API.registerDevice(regionName: regionName, authToken: jwt)
+
+                // 3) save profile and connect/toggle
+                _ = try await VPNManager.shared.installOrUpdateTunnel(using: reg, regionName: regionName)
+                try await VPNManager.shared.toggleConnection()
+
+                try? await Task.sleep(nanoseconds: 600_000_000)
+                await refreshStatus()
+            } catch {
+                lastError = error.localizedDescription
+            }
+            isBusy = false
+        }
     }
 
-    func handleLogout() {
+    private func copyPubkey() {
+        do {
+            let pub = try WGKeyStore.publicKeyBase64()
+            UIPasteboard.general.string = pub
+            lastError = "Device public key copied to clipboard."
+        } catch {
+            lastError = "Could not read/generate device key."
+        }
+        showDropdown = false
+    }
+
+    private func handleLogout() {
         Task {
             let client = SupabaseManager.shared.client
             let deviceId = DeviceID.current()
-
-            // Delete just this device row (for the current user via RLS)
-            try? await client
-                .from("devices")
-                .delete()
-                .eq("device_id", value: deviceId)
-                .execute()
-
-            // Also sign out if desired
+            try? await client.from("devices").delete().eq("device_id", value: deviceId).execute()
             try? await client.auth.signOut()
         }
         print("Logging out…")
     }
 
+    // Poll saved manager for a simple status read
+    @MainActor
+    private func refreshStatus() async {
+        do {
+            let managers = try await NETunnelProviderManager.loadAllFromPreferences()
+            if let m = managers.first {
+                isConnected = (m.connection.status == .connected)
+            } else {
+                isConnected = false
+            }
+        } catch {
+            isConnected = false
+        }
+    }
 }
 
 #Preview {
@@ -193,6 +287,10 @@ struct HomeView: View {
         .tint(.blue)
         .preferredColorScheme(.dark)
 }
+
+
+
+
 
 
 

@@ -7,63 +7,123 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C81E4772E4FE39B004B52D4 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */; };
-		1C81E47F2E4FE39B004B52D4 /* PantherTunnel.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1C81E4752E4FE39A004B52D4 /* PantherTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1C7AE4432E60D37500696403 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */; };
 		1C9809AA2E4BE2AF0081BAFD /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9809A92E4BE2AF0081BAFD /* Supabase */; };
+		1CB92AF52E5CF8240071EB4C /* VPNPacketTunnel.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1CE6BC6C2E64E3F400BCCCDA /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */; };
+		1CE87A372E627A6900F480E4 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1CE87A362E627A6900F480E4 /* WireGuardKit */; };
+		1CE87A392E627A8A00F480E4 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1CE87A382E627A8A00F480E4 /* WireGuardKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1C81E47D2E4FE39B004B52D4 /* PBXContainerItemProxy */ = {
+		1C7AE44D2E60DCF600696403 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1C4B77822E4372D000AC3D72 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 1C81E4742E4FE39A004B52D4;
-			remoteInfo = PantherTunnel;
+			remoteGlobalIDString = 1C7AE4492E60DC8D00696403;
+			remoteInfo = "WireGuardGoBridge-iOS";
+		};
+		1CB92AF32E5CF8240071EB4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1C4B77822E4372D000AC3D72 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1CB92AEB2E5CF8240071EB4C;
+			remoteInfo = VPNPacketTunnel;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1C81E4802E4FE39B004B52D4 /* Embed Foundation Extensions */ = {
+		1C7AE4452E60D37500696403 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C81E4802E4FE39B004B52D4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				1C81E47F2E4FE39B004B52D4 /* PantherTunnel.appex in Embed Foundation Extensions */,
+				1CB92AF52E5CF8240071EB4C /* VPNPacketTunnel.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1C4B778A2E4372D000AC3D72 /* PantherVPN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PantherVPN.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1C81E4752E4FE39A004B52D4 /* PantherTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PantherTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C7AE4542E60E27300696403 /* key.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = key.h; sourceTree = "<group>"; };
+		1C7AE4552E60E27300696403 /* key.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = key.c; sourceTree = "<group>"; };
+		1C7AE4562E60E27300696403 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		1C7AE4572E60E27300696403 /* WireGuardKitC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WireGuardKitC.h; sourceTree = "<group>"; };
+		1C7AE4582E60E27300696403 /* x25519.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = x25519.h; sourceTree = "<group>"; };
+		1C7AE4592E60E27300696403 /* x25519.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = x25519.c; sourceTree = "<group>"; };
 		1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = VPNPacketTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CE87A282E626D5300F480E4 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		1CE87A292E626D5300F480E4 /* api-apple.go */ = {isa = PBXFileReference; lastKnownFileType = text; path = "api-apple.go"; sourceTree = "<group>"; };
+		1CE87A2A2E626D5300F480E4 /* dummy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dummy.c; sourceTree = "<group>"; };
+		1CE87A2B2E626D5300F480E4 /* go.mod */ = {isa = PBXFileReference; lastKnownFileType = text; path = go.mod; sourceTree = "<group>"; };
+		1CE87A2C2E626D5300F480E4 /* go.sum */ = {isa = PBXFileReference; lastKnownFileType = text; path = go.sum; sourceTree = "<group>"; };
+		1CE87A2D2E626D5300F480E4 /* goruntime-boottime-over-monotonic.diff */ = {isa = PBXFileReference; lastKnownFileType = text; path = "goruntime-boottime-over-monotonic.diff"; sourceTree = "<group>"; };
+		1CE87A2E2E626D5300F480E4 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		1CE87A2F2E626D5300F480E4 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		1CE87A302E626D5300F480E4 /* wireguard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wireguard.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		1C81E4832E4FE39B004B52D4 /* Exceptions for "PantherTunnel" folder in "PantherTunnel" target */ = {
+		1C7AE45B2E60E6A600696403 /* Exceptions for "PantherVPN" folder in "PantherVPN" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Keychain.swift,
+				KeypairManager.swift,
+				Region.swift,
+				WGKeys.swift,
 			);
-			target = 1C81E4742E4FE39A004B52D4 /* PantherTunnel */;
+			target = 1C4B77892E4372D000AC3D72 /* PantherVPN */;
+		};
+		1CB92AF82E5CF8240071EB4C /* Exceptions for "VPNPacketTunnel" folder in "VPNPacketTunnel" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				VPNController.swift,
+			);
+			target = 1CB92AEB2E5CF8240071EB4C /* VPNPacketTunnel */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1C4B778C2E4372D000AC3D72 /* PantherVPN */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1C7AE45B2E60E6A600696403 /* Exceptions for "PantherVPN" folder in "PantherVPN" target */,
+			);
 			path = PantherVPN;
+			sourceTree = "<group>";
+		};
+		1C7AE4192E5FD0B100696403 /* panthervpn */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = panthervpn;
 			sourceTree = "<group>";
 		};
 		1C81E4782E4FE39B004B52D4 /* PantherTunnel */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				1C81E4832E4FE39B004B52D4 /* Exceptions for "PantherTunnel" folder in "PantherTunnel" target */,
-			);
 			path = PantherTunnel;
+			sourceTree = "<group>";
+		};
+		1CB92AEE2E5CF8240071EB4C /* VPNPacketTunnel */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1CB92AF82E5CF8240071EB4C /* Exceptions for "VPNPacketTunnel" folder in "VPNPacketTunnel" target */,
+			);
+			path = VPNPacketTunnel;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -73,15 +133,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CE6BC6C2E64E3F400BCCCDA /* NetworkExtension.framework in Frameworks */,
+				1CE87A372E627A6900F480E4 /* WireGuardKit in Frameworks */,
 				1C9809AA2E4BE2AF0081BAFD /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1C81E4722E4FE39A004B52D4 /* Frameworks */ = {
+		1CB92AE92E5CF8240071EB4C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C81E4772E4FE39B004B52D4 /* NetworkExtension.framework in Frameworks */,
+				1CE87A392E627A8A00F480E4 /* WireGuardKit in Frameworks */,
+				1C7AE4432E60D37500696403 /* NetworkExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +156,8 @@
 			children = (
 				1C4B778C2E4372D000AC3D72 /* PantherVPN */,
 				1C81E4782E4FE39B004B52D4 /* PantherTunnel */,
+				1CB92AEE2E5CF8240071EB4C /* VPNPacketTunnel */,
+				1C7AE4192E5FD0B100696403 /* panthervpn */,
 				1C9809A82E4BE2AF0081BAFD /* Frameworks */,
 				1C4B778B2E4372D000AC3D72 /* Products */,
 			);
@@ -102,20 +167,72 @@
 			isa = PBXGroup;
 			children = (
 				1C4B778A2E4372D000AC3D72 /* PantherVPN.app */,
-				1C81E4752E4FE39A004B52D4 /* PantherTunnel.appex */,
+				1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1C7AE45A2E60E27300696403 /* WireGuardKitC */ = {
+			isa = PBXGroup;
+			children = (
+				1C7AE4542E60E27300696403 /* key.h */,
+				1C7AE4552E60E27300696403 /* key.c */,
+				1C7AE4562E60E27300696403 /* module.modulemap */,
+				1C7AE4572E60E27300696403 /* WireGuardKitC.h */,
+				1C7AE4582E60E27300696403 /* x25519.h */,
+				1C7AE4592E60E27300696403 /* x25519.c */,
+			);
+			name = WireGuardKitC;
+			path = "External/wireguard-apple/Sources/WireGuardKitC";
 			sourceTree = "<group>";
 		};
 		1C9809A82E4BE2AF0081BAFD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1CE87A312E626D5300F480E4 /* WireGuardKitGo */,
+				1C7AE45A2E60E27300696403 /* WireGuardKitC */,
 				1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		1CE87A312E626D5300F480E4 /* WireGuardKitGo */ = {
+			isa = PBXGroup;
+			children = (
+				1CE87A282E626D5300F480E4 /* .gitignore */,
+				1CE87A292E626D5300F480E4 /* api-apple.go */,
+				1CE87A2A2E626D5300F480E4 /* dummy.c */,
+				1CE87A2B2E626D5300F480E4 /* go.mod */,
+				1CE87A2C2E626D5300F480E4 /* go.sum */,
+				1CE87A2D2E626D5300F480E4 /* goruntime-boottime-over-monotonic.diff */,
+				1CE87A2E2E626D5300F480E4 /* Makefile */,
+				1CE87A2F2E626D5300F480E4 /* module.modulemap */,
+				1CE87A302E626D5300F480E4 /* wireguard.h */,
+			);
+			name = WireGuardKitGo;
+			path = "External/wireguard-apple/Sources/WireGuardKitGo";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		1C7AE4492E60DC8D00696403 /* WireGuardGoBridge-iOS */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "";
+			buildConfigurationList = 1C7AE44A2E60DC8D00696403 /* Build configuration list for PBXLegacyTarget "WireGuardGoBridge-iOS" */;
+			buildPhases = (
+			);
+			buildToolPath = /Applications/Xcode.app/Contents/Developer/usr/bin/make;
+			buildWorkingDirectory = "$(SRCROOT)/External/wireguard-apple/Sources/WireGuardKitGo";
+			dependencies = (
+			);
+			name = "WireGuardGoBridge-iOS";
+			packageProductDependencies = (
+			);
+			passBuildSettingsInEnvironment = 1;
+			productName = "WireGuardGoBridge-iOS";
+		};
+/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		1C4B77892E4372D000AC3D72 /* PantherVPN */ = {
@@ -130,7 +247,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				1C81E47E2E4FE39B004B52D4 /* PBXTargetDependency */,
+				1CB92AF42E5CF8240071EB4C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				1C4B778C2E4372D000AC3D72 /* PantherVPN */,
@@ -138,31 +255,35 @@
 			name = PantherVPN;
 			packageProductDependencies = (
 				1C9809A92E4BE2AF0081BAFD /* Supabase */,
+				1CE87A362E627A6900F480E4 /* WireGuardKit */,
 			);
 			productName = PantherVPN;
 			productReference = 1C4B778A2E4372D000AC3D72 /* PantherVPN.app */;
 			productType = "com.apple.product-type.application";
 		};
-		1C81E4742E4FE39A004B52D4 /* PantherTunnel */ = {
+		1CB92AEB2E5CF8240071EB4C /* VPNPacketTunnel */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1C81E4842E4FE39B004B52D4 /* Build configuration list for PBXNativeTarget "PantherTunnel" */;
+			buildConfigurationList = 1CB92AF92E5CF8240071EB4C /* Build configuration list for PBXNativeTarget "VPNPacketTunnel" */;
 			buildPhases = (
-				1C81E4712E4FE39A004B52D4 /* Sources */,
-				1C81E4722E4FE39A004B52D4 /* Frameworks */,
-				1C81E4732E4FE39A004B52D4 /* Resources */,
+				1CB92AE82E5CF8240071EB4C /* Sources */,
+				1CB92AE92E5CF8240071EB4C /* Frameworks */,
+				1CB92AEA2E5CF8240071EB4C /* Resources */,
+				1C7AE4452E60D37500696403 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				1C7AE44E2E60DCF600696403 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				1C81E4782E4FE39B004B52D4 /* PantherTunnel */,
+				1CB92AEE2E5CF8240071EB4C /* VPNPacketTunnel */,
 			);
-			name = PantherTunnel;
+			name = VPNPacketTunnel;
 			packageProductDependencies = (
+				1CE87A382E627A8A00F480E4 /* WireGuardKit */,
 			);
-			productName = PantherTunnel;
-			productReference = 1C81E4752E4FE39A004B52D4 /* PantherTunnel.appex */;
+			productName = VPNPacketTunnel;
+			productReference = 1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -178,7 +299,10 @@
 					1C4B77892E4372D000AC3D72 = {
 						CreatedOnToolsVersion = 16.0;
 					};
-					1C81E4742E4FE39A004B52D4 = {
+					1C7AE4492E60DC8D00696403 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					1CB92AEB2E5CF8240071EB4C = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
@@ -194,6 +318,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1C71D1FF2E44EB51002F105D /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				1CE87A352E627A3200F480E4 /* XCLocalSwiftPackageReference "External/WireGuardKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1C4B778B2E4372D000AC3D72 /* Products */;
@@ -201,7 +326,8 @@
 			projectRoot = "";
 			targets = (
 				1C4B77892E4372D000AC3D72 /* PantherVPN */,
-				1C81E4742E4FE39A004B52D4 /* PantherTunnel */,
+				1CB92AEB2E5CF8240071EB4C /* VPNPacketTunnel */,
+				1C7AE4492E60DC8D00696403 /* WireGuardGoBridge-iOS */,
 			);
 		};
 /* End PBXProject section */
@@ -214,7 +340,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1C81E4732E4FE39A004B52D4 /* Resources */ = {
+		1CB92AEA2E5CF8240071EB4C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -231,7 +357,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1C81E4712E4FE39A004B52D4 /* Sources */ = {
+		1CB92AE82E5CF8240071EB4C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -241,10 +367,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1C81E47E2E4FE39B004B52D4 /* PBXTargetDependency */ = {
+		1C7AE44E2E60DCF600696403 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1C81E4742E4FE39A004B52D4 /* PantherTunnel */;
-			targetProxy = 1C81E47D2E4FE39B004B52D4 /* PBXContainerItemProxy */;
+			target = 1C7AE4492E60DC8D00696403 /* WireGuardGoBridge-iOS */;
+			targetProxy = 1C7AE44D2E60DCF600696403 /* PBXContainerItemProxy */;
+		};
+		1CB92AF42E5CF8240071EB4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1CB92AEB2E5CF8240071EB4C /* VPNPacketTunnel */;
+			targetProxy = 1CB92AF32E5CF8240071EB4C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -282,6 +413,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMPILER_INDEX_STORE_ENABLE = Default;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -305,7 +437,9 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				NEW_SETTING = "";
 				ONLY_ACTIVE_ARCH = YES;
+				PATH = " ";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -345,6 +479,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMPILER_INDEX_STORE_ENABLE = Default;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -362,6 +497,8 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				NEW_SETTING = "";
+				PATH = " ";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
@@ -373,10 +510,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PantherVPN/panthervpn.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PantherVPN/Preview Content\"";
-				DEVELOPMENT_TEAM = C4CPRKLZ2R;
+				DEVELOPMENT_TEAM = MF2KZ4D2GH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -389,7 +527,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = panthertech.PantherVPN;
+				PRODUCT_BUNDLE_IDENTIFIER = app.panthervpn.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -402,10 +540,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PantherVPN/panthervpn.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PantherVPN/Preview Content\"";
-				DEVELOPMENT_TEAM = C4CPRKLZ2R;
+				DEVELOPMENT_TEAM = MF2KZ4D2GH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -418,7 +557,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = panthertech.PantherVPN;
+				PRODUCT_BUNDLE_IDENTIFIER = app.panthervpn.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -426,15 +565,50 @@
 			};
 			name = Release;
 		};
-		1C81E4812E4FE39B004B52D4 /* Debug */ = {
+		1C7AE44B2E60DC8D00696403 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = PantherTunnel/PantherTunnel.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = MF2KZ4D2GH;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				NEW_SETTING1 = "";
+				NEW_SETTING2 = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PATH = " ${PATH}:/opt/homebrew/bin:/opt/homebrew/opt/go/bin:/usr/local/bin\n";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1C7AE44C2E60DC8D00696403 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = MF2KZ4D2GH;
+				NEW_SETTING1 = "";
+				NEW_SETTING2 = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PATH = " ${PATH}:/opt/homebrew/bin:/opt/homebrew/opt/go/bin:/usr/local/bin\n";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1CB92AF62E5CF8240071EB4C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = VPNPacketTunnel/VPNPacketTunnel.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PantherTunnel/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = PantherTunnel;
+				DEVELOPMENT_TEAM = MF2KZ4D2GH;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VPNPacketTunnel/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VPNPacketTunnel;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -442,8 +616,9 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = panthertech.PantherVPN.PantherTunnel;
+				PRODUCT_BUNDLE_IDENTIFIER = app.panthervpn.client.packetTunnel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -451,15 +626,17 @@
 			};
 			name = Debug;
 		};
-		1C81E4822E4FE39B004B52D4 /* Release */ = {
+		1CB92AF72E5CF8240071EB4C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = PantherTunnel/PantherTunnel.entitlements;
+				CODE_SIGN_ENTITLEMENTS = VPNPacketTunnel/VPNPacketTunnel.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PantherTunnel/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = PantherTunnel;
+				DEVELOPMENT_TEAM = MF2KZ4D2GH;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VPNPacketTunnel/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VPNPacketTunnel;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -467,8 +644,9 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = panthertech.PantherVPN.PantherTunnel;
+				PRODUCT_BUNDLE_IDENTIFIER = app.panthervpn.client.packetTunnel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -497,16 +675,32 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1C81E4842E4FE39B004B52D4 /* Build configuration list for PBXNativeTarget "PantherTunnel" */ = {
+		1C7AE44A2E60DC8D00696403 /* Build configuration list for PBXLegacyTarget "WireGuardGoBridge-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1C81E4812E4FE39B004B52D4 /* Debug */,
-				1C81E4822E4FE39B004B52D4 /* Release */,
+				1C7AE44B2E60DC8D00696403 /* Debug */,
+				1C7AE44C2E60DC8D00696403 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1CB92AF92E5CF8240071EB4C /* Build configuration list for PBXNativeTarget "VPNPacketTunnel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1CB92AF62E5CF8240071EB4C /* Debug */,
+				1CB92AF72E5CF8240071EB4C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1CE87A352E627A3200F480E4 /* XCLocalSwiftPackageReference "External/WireGuardKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = External/WireGuardKit;
+		};
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		1C71D1FF2E44EB51002F105D /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
@@ -524,6 +718,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1C71D1FF2E44EB51002F105D /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		1CE87A362E627A6900F480E4 /* WireGuardKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1CE87A352E627A3200F480E4 /* XCLocalSwiftPackageReference "External/WireGuardKit" */;
+			productName = WireGuardKit;
+		};
+		1CE87A382E627A8A00F480E4 /* WireGuardKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1CE87A352E627A3200F480E4 /* XCLocalSwiftPackageReference "External/WireGuardKit" */;
+			productName = WireGuardKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
