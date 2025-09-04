@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C70CFE62E6A31F50034E5E3 /* VPNPacketTunnel.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1C7AE4432E60D37500696403 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */; };
 		1C9809AA2E4BE2AF0081BAFD /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9809A92E4BE2AF0081BAFD /* Supabase */; };
-		1CB92AF52E5CF8240071EB4C /* VPNPacketTunnel.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1CB92AEC2E5CF8240071EB4C /* VPNPacketTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1CE6BC6C2E64E3F400BCCCDA /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C81E4762E4FE39A004B52D4 /* NetworkExtension.framework */; };
 		1CE87A372E627A6900F480E4 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1CE87A362E627A6900F480E4 /* WireGuardKit */; };
 		1CE87A392E627A8A00F480E4 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1CE87A382E627A8A00F480E4 /* WireGuardKit */; };
@@ -45,14 +45,14 @@
 		};
 		1C81E4802E4FE39B004B52D4 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				1CB92AF52E5CF8240071EB4C /* VPNPacketTunnel.appex in Embed Foundation Extensions */,
+				1C70CFE62E6A31F50034E5E3 /* VPNPacketTunnel.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -78,22 +78,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		1C7AE45B2E60E6A600696403 /* Exceptions for "PantherVPN" folder in "PantherVPN" target */ = {
+		1C70CFE02E68C5E80034E5E3 /* Exceptions for "PantherVPN" folder in "PantherVPN" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 				Keychain.swift,
 				KeypairManager.swift,
-				Region.swift,
 				WGKeys.swift,
 			);
 			target = 1C4B77892E4372D000AC3D72 /* PantherVPN */;
 		};
-		1CB92AF82E5CF8240071EB4C /* Exceptions for "VPNPacketTunnel" folder in "VPNPacketTunnel" target */ = {
+		1C70CFE12E68C5F90034E5E3 /* Exceptions for "VPNPacketTunnel" folder in "VPNPacketTunnel" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				VPNController.swift,
 			);
 			target = 1CB92AEB2E5CF8240071EB4C /* VPNPacketTunnel */;
 		};
@@ -103,7 +101,7 @@
 		1C4B778C2E4372D000AC3D72 /* PantherVPN */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1C7AE45B2E60E6A600696403 /* Exceptions for "PantherVPN" folder in "PantherVPN" target */,
+				1C70CFE02E68C5E80034E5E3 /* Exceptions for "PantherVPN" folder in "PantherVPN" target */,
 			);
 			path = PantherVPN;
 			sourceTree = "<group>";
@@ -121,7 +119,7 @@
 		1CB92AEE2E5CF8240071EB4C /* VPNPacketTunnel */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1CB92AF82E5CF8240071EB4C /* Exceptions for "VPNPacketTunnel" folder in "VPNPacketTunnel" target */,
+				1C70CFE12E68C5F90034E5E3 /* Exceptions for "VPNPacketTunnel" folder in "VPNPacketTunnel" target */,
 			);
 			path = VPNPacketTunnel;
 			sourceTree = "<group>";
@@ -440,6 +438,7 @@
 				NEW_SETTING = "";
 				ONLY_ACTIVE_ARCH = YES;
 				PATH = " ";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=*]" = app.panthervpn.client;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -499,6 +498,7 @@
 				MTL_FAST_MATH = YES;
 				NEW_SETTING = "";
 				PATH = " ";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=*]" = app.panhervpn.client;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
@@ -517,6 +517,8 @@
 				DEVELOPMENT_TEAM = MF2KZ4D2GH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PantherVPN/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -547,6 +549,8 @@
 				DEVELOPMENT_TEAM = MF2KZ4D2GH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PantherVPN/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -610,6 +614,7 @@
 				INFOPLIST_FILE = VPNPacketTunnel/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VPNPacketTunnel;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -638,6 +643,7 @@
 				INFOPLIST_FILE = VPNPacketTunnel/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VPNPacketTunnel;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

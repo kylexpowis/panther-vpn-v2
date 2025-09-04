@@ -4,7 +4,7 @@
 //
 //  Created by Kyle Powis on 02/09/2025.
 //
-
+#if false
 import Foundation
 import CryptoKit
 
@@ -71,3 +71,4 @@ enum WGKeys {
         try Base64.enc(getOrCreate().privateKeyRaw)
     }
 }
+#endif

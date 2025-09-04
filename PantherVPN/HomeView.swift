@@ -140,7 +140,13 @@ struct HomeView: View {
         }, message: {
             Text(lastError ?? "")
         })
-        .onAppear { Task { await refreshStatus() } }
+        .onAppear {
+            Task {
+                await VPNManager.shared.removeStaleProfiles()   // cleanup old profiles
+                await refreshStatus()                           // then refresh status
+            }
+        }
+
     }
 
     // MARK: - Derived UI
@@ -224,26 +230,44 @@ struct HomeView: View {
 
         Task {
             do {
-                // 1) get Supabase user access token (non-optional Session)
+                print("▶️ Connect tapped for region:", regionName)
+
+                // 1) Supabase session (non-optional)
                 let client = SupabaseManager.shared.client
                 let session = try await client.auth.session
                 let jwt = session.accessToken
+                print("🔐 JWT length:", jwt.count)
 
-                // 2) call your function to register/get config
+                // 2) Register with backend (Edge Function)
+                print("🌐 Calling wg-register…")
                 let reg = try await API.registerDevice(regionName: regionName, authToken: jwt)
+                print("✅ wg-register ok. Assigned:", reg.assignedAddressCIDR, "Endpoint:", reg.endpoint)
 
-                // 3) save profile and connect/toggle
+                // 2.5) Remove stale profiles to prevent “Update Required”
+                await VPNManager.shared.removeStaleProfiles()
+
+                // 3) Save profile
+                print("🛠️ Installing/updating profile…")
                 _ = try await VPNManager.shared.installOrUpdateTunnel(using: reg, regionName: regionName)
+
+                // Small grace so the profile persists before starting
+                try? await Task.sleep(nanoseconds: 300_000_000)
+
+                // 4) Toggle connection
+                print("🔌 Toggling connection…")
                 try await VPNManager.shared.toggleConnection()
 
                 try? await Task.sleep(nanoseconds: 600_000_000)
                 await refreshStatus()
+                print("📶 Status refreshed.")
             } catch {
-                lastError = error.localizedDescription
+                await MainActor.run { lastError = error.localizedDescription }
+                print("❌ Connect flow error:", error.localizedDescription)
             }
-            isBusy = false
+            await MainActor.run { isBusy = false }
         }
     }
+
 
     private func copyPubkey() {
         do {
