@@ -56,6 +56,7 @@ final class VPNManager {
                 "privateKey": privateKeyB64,
                 "addresses": [reg.assignedAddressCIDR],
                 "dns": reg.dns,                           // e.g. ["1.1.1.1", "1.0.0.1"]
+                "mtu": 1280   
                 // Optional:
                 // "mtu": 1280,
                 // "listenPort": 51820
