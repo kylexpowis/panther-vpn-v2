@@ -4,7 +4,7 @@
 //
 //  Created by Kyle Powis on 31/08/2025.
 //
-
+#if false
 import CryptoKit
 
 enum WGKeys {
@@ -30,3 +30,4 @@ enum WGKeys {
         Keychain.getString(for: Keys.devicePrivateKey)
     }
 }
+#endif

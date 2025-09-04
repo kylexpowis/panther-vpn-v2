@@ -5,7 +5,7 @@
 //  Created by Kyle Powis on 31/08/2025.
 //
 
-
+#if false
 import Foundation
 import Security
 
@@ -44,3 +44,4 @@ enum Keys {
     static let deviceAddressCIDR = "wg_device_address"  // Value = the Address from [Interface], e.g. "10.0.0.2/32"
 }
 
+#endif
