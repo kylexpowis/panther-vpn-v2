@@ -7,7 +7,9 @@
 
 import SwiftUI
 import Supabase
-import UIKit   // ← for UIDevice.current.name
+import UIKit        // UIDevice.current.name
+import Security     // Keychain
+import NetworkExtension
 
 private struct RegisterDeviceParams: Encodable {
     let p_device_id: String
@@ -15,9 +17,52 @@ private struct RegisterDeviceParams: Encodable {
     let p_name: String
 }
 
+// MARK: - Simple Keychain helper
+private enum Keychain {
+    private static let service = "com.panthervpn.app"
+
+    static func set(_ value: String, for key: String) {
+        let data = Data(value.utf8)
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key,
+            kSecValueData as String: data
+        ]
+        SecItemDelete(query as CFDictionary)
+        SecItemAdd(query as CFDictionary, nil)
+    }
+
+    static func get(_ key: String) -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        guard status == errSecSuccess, let data = item as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    static func delete(_ key: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key
+        ]
+        SecItemDelete(query as CFDictionary)
+    }
+}
+
 struct ContentView: View {
+    // MARK: - State
     @State private var username: String = ""
     @State private var password: String = ""
+    @State private var showPassword: Bool = false
+
     @State private var rememberMe: Bool = false
     @State private var isLoggedIn: Bool = false
     @State private var showAlert: Bool = false
@@ -26,6 +71,11 @@ struct ContentView: View {
     // For focused field styling
     @FocusState private var focusedField: Field?
     private enum Field { case username, password }
+
+    // Keys for persistence
+    private let rememberKey = "pvpn_remember"
+    private let userKey = "pvpn_username"
+    private let passKey = "pvpn_password"
 
     var body: some View {
         NavigationStack {
@@ -55,14 +105,48 @@ struct ContentView: View {
                         )
                         .focused($focusedField, equals: .username)
 
-                        // Password
-                        inputField(
-                            text: $password,
-                            placeholder: "Password",
-                            isSecure: true,
-                            isFocused: focusedField == .password
-                        )
-                        .focused($focusedField, equals: .password)
+                        // Password with eye toggle
+                        ZStack(alignment: .trailing) {
+                            let field = Group {
+                                if showPassword {
+                                    TextField(
+                                        "",
+                                        text: $password,
+                                        prompt: Text("Password").foregroundColor(.gray)
+                                    )
+                                    .textInputAutocapitalization(.never)
+                                    .autocorrectionDisabled(true)
+                                } else {
+                                    SecureField(
+                                        "",
+                                        text: $password,
+                                        prompt: Text("Password").foregroundColor(.gray)
+                                    )
+                                }
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 12)
+                            .focused($focusedField, equals: .password)
+
+                            field
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.black)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(focusedField == .password ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
+                                )
+                                .shadow(color: focusedField == .password ? Color.accentColor.opacity(0.15) : .clear, radius: 6, y: 3)
+
+                            Button(action: { showPassword.toggle() }) {
+                                Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
+                                    .foregroundColor(.gray)
+                                    .padding(.trailing, 12)
+                            }
+                            .accessibilityLabel(Text(showPassword ? "Hide Password" : "Show Password"))
+                        }
 
                         // Remember Me
                         Toggle(isOn: $rememberMe) {
@@ -72,6 +156,13 @@ struct ContentView: View {
                         .toggleStyle(CheckboxToggleStyle())
                         .padding(.leading, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: rememberMe) { _, newVal in
+                            UserDefaults.standard.set(newVal, forKey: rememberKey)
+                            if !newVal {
+                                Keychain.delete(userKey)
+                                Keychain.delete(passKey)
+                            }
+                        }
 
                         // Log In button
                         Button(action: handleLogin) {
@@ -84,7 +175,7 @@ struct ContentView: View {
                                     RoundedRectangle(cornerRadius: 12)
                                         .fill(Color.accentColor)
                                 )
-                                .shadow(color: Color.accentColor.opacity(0.35), radius: 8, y: 4) // softer glow
+                                .shadow(color: Color.accentColor.opacity(0.35), radius: 8, y: 4)
                         }
 
                         // Sign Up link
@@ -107,11 +198,16 @@ struct ContentView: View {
                 } message: {
                     Text(alertMessage)
                 }
+                .task {
+                    // Bootstraps: load remembered creds, and auto-enter if VPN is connected or session is valid
+                    loadRememberedCredentials()
+                    await bootstrapAuthState()
+                }
             }
         }
     }
 
-    // MARK: - Styled input field
+    // MARK: - Styled input field (shared for username)
     @ViewBuilder
     private func inputField(text: Binding<String>,
                             placeholder: String,
@@ -135,7 +231,7 @@ struct ContentView: View {
                 .autocorrectionDisabled(true)
             }
         }
-        .foregroundColor(.white) // typed text
+        .foregroundColor(.white)
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
 
@@ -148,7 +244,7 @@ struct ContentView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(isFocused ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
             )
-            .shadow(color: isFocused ? Color.accentColor.opacity(0.15) : .clear, radius: 6, y: 3) // softer glow than Signup
+            .shadow(color: isFocused ? Color.accentColor.opacity(0.15) : .clear, radius: 6, y: 3)
     }
 
     // MARK: - Actions
@@ -174,10 +270,19 @@ struct ContentView: View {
                     p_platform: "ios",
                     p_name: UIDevice.current.name
                 )
-
                 _ = try await client.database
                     .rpc("register_device", params: params)
-                    .execute()  // we don't need the return row
+                    .execute()
+
+                // 3) Remember me
+                if rememberMe {
+                    Keychain.set(username, for: userKey)
+                    Keychain.set(password, for: passKey)
+                } else {
+                    Keychain.delete(userKey)
+                    Keychain.delete(passKey)
+                }
+                UserDefaults.standard.set(rememberMe, forKey: rememberKey)
 
                 await MainActor.run { isLoggedIn = true }
 
@@ -195,6 +300,43 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - Bootstrap & helpers
+
+    private func loadRememberedCredentials() {
+        let remembered = UserDefaults.standard.bool(forKey: rememberKey)
+        rememberMe = remembered
+        if remembered {
+            if let savedUser = Keychain.get(userKey) { username = savedUser }
+            if let savedPass = Keychain.get(passKey) { password = savedPass }
+        }
+    }
+
+    private func isVPNConnected() async -> Bool {
+        do {
+            let managers = try await NETunnelProviderManager.loadAllFromPreferences()
+            if let m = managers.first {
+                return m.connection.status == .connected
+            }
+        } catch { /* ignore */ }
+        return false
+    }
+
+    private func bootstrapAuthState() async {
+        // If VPN is still connected, skip login screen.
+        if await isVPNConnected() {
+            await MainActor.run { isLoggedIn = true }
+            return
+        }
+
+        // Otherwise, if Supabase session exists and is valid, skip login.
+        let client = SupabaseManager.shared.client
+        do {
+            _ = try await client.auth.session
+            await MainActor.run { isLoggedIn = true }
+        } catch {
+            // stay on login
+        }
+    }
 }
 
 #Preview {
@@ -202,5 +344,6 @@ struct ContentView: View {
         .tint(.blue)
         .preferredColorScheme(.dark)
 }
+
 
 
