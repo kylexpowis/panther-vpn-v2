@@ -10,6 +10,9 @@ import NetworkExtension
 import UIKit
 
 struct HomeView: View {
+    // For dismissing when pushed/presented
+    @Environment(\.dismiss) private var dismiss
+
     // UI State
     @State private var selectedServer = "Helsinki"  // default to live region
     @State private var showDropdown = false
@@ -79,10 +82,12 @@ struct HomeView: View {
 
                                 Divider().background(Color.white.opacity(0.2))
 
-                                Button("Log Out", action: handleLogout)
-                                    .foregroundColor(.white)
-                                    .padding(.vertical, 10)
-                                    .padding(.horizontal, 12)
+                                Button("Log Out") {
+                                    handleLogout()
+                                }
+                                .foregroundColor(.white)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 12)
                             }
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
@@ -150,7 +155,6 @@ struct HomeView: View {
                                 let bottomY = t.maxY
                                 let fullHeight = max(0, bottomY - topY)
 
-                                // Swap to your asset name (e.g., "mapOverlay")
                                 let mapBase = Image("helsinki_map")
                                     .resizable()
                                     .scaledToFill()
@@ -159,12 +163,10 @@ struct HomeView: View {
                                 mapBase
                                     .frame(width: proxy.size.width, height: fullHeight)
                                     .position(x: proxy.size.width / 2, y: (topY + bottomY) / 2)
-                                    // thin black hairline to kill any light halo
                                     .overlay(
                                         RoundedRectangle(cornerRadius: cardCorner, style: .continuous)
                                             .stroke(Color.black.opacity(0.9), lineWidth: 0.6)
                                     )
-                                    // ensure it draws above anything in this stack
                                     .zIndex(10)
                                     .onAppear {
                                         self.mapFullHeight = fullHeight
@@ -194,16 +196,14 @@ struct HomeView: View {
                                 .font(.headline)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)  // keep original height
+                        .padding(.vertical, 14)
                         .background(
                             RoundedRectangle(cornerRadius: cardCorner)
                                 .fill(buttonFillColor)
                         )
-                        // subtle border when idle & available
                         .overlay(
                             Group {
                                 if isConnected {
-                                    // steady green glow outline
                                     RoundedRectangle(cornerRadius: cardCorner)
                                         .stroke(Color.green, lineWidth: 2)
                                         .shadow(color: .green.opacity(0.5), radius: 8)
@@ -245,11 +245,10 @@ struct HomeView: View {
         }
         .onAppear {
             Task {
-                await VPNManager.shared.removeStaleProfiles()   // cleanup old profiles
-                await refreshStatus()                           // then refresh status
+                await VPNManager.shared.removeStaleProfiles()
+                await refreshStatus()
             }
         }
-        // Trigger slide when connection changes
         .onChange(of: isConnected) { _, newValue in
             if mapFullHeight > 0 {
                 if newValue {
@@ -263,12 +262,9 @@ struct HomeView: View {
                 }
             }
         }
-        // If we connected before measurement finished, nudge animation when size arrives
         .onChange(of: mapFullHeight) { _, newVal in
             if newVal > 0, isConnected {
-                withAnimation(.easeInOut(duration: 1.1)) {
-                    mapRevealHeight = newVal
-                }
+                withAnimation(.easeInOut(duration: 1.1)) { mapRevealHeight = newVal }
             }
         }
     }
@@ -282,11 +278,10 @@ struct HomeView: View {
     }
 
     private var buttonFillColor: Color {
-        if isConnected { return .black }                              // connected = black
-        return isSelectedServerAvailable ? Color.accentColor : .gray  // idle live vs. coming soon
+        if isConnected { return .black }
+        return isSelectedServerAvailable ? Color.accentColor : .gray
     }
 
-    // Opacity of the server list (1 → 0 as overlay reveals)
     private var serverListOpacity: Double {
         guard mapFullHeight > 0 else { return isConnected ? 0 : 1 }
         let ratio = min(max(mapRevealHeight / mapFullHeight, 0), 1)
@@ -297,7 +292,6 @@ struct HomeView: View {
         regionNameForSelectedServer() != nil
     }
 
-    // Only live region(s) return a name; coming-soon return nil to disable the button
     private func regionNameForSelectedServer() -> String? {
         switch selectedServer {
         case "Helsinki": return "Helsinki"
@@ -305,7 +299,8 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Server Card (unchanged visuals except shared corner)
+    // MARK: - Server Card
+
     @ViewBuilder
     private func serverCard(_ server: Server, isSelected: Bool) -> some View {
         HStack(spacing: 12) {
@@ -345,6 +340,7 @@ struct HomeView: View {
     }
 
     // MARK: - Flags
+
     private func flagEmoji(for name: String) -> String {
         switch name {
         case "Helsinki":   return "🇫🇮"
@@ -359,7 +355,6 @@ struct HomeView: View {
     // MARK: - Actions
 
     private func handleConnect() {
-        // If already connected, ask for confirmation to disconnect
         if isConnected {
             showDisconnectConfirm = true
             return
@@ -373,47 +368,80 @@ struct HomeView: View {
             do {
                 print("▶️ Connect tapped for region:", regionName)
 
-                // 1) Supabase session (non-optional)
                 let client = SupabaseManager.shared.client
                 let session = try await client.auth.session
                 let jwt = session.accessToken
-                print("🔐 JWT length:", jwt.count)
 
-                // 2) Register with backend (Edge Function)
                 print("🌐 Calling wg-register…")
                 let reg = try await API.registerDevice(regionName: regionName, authToken: jwt)
-                print("✅ wg-register ok. Assigned:", reg.assignedAddressCIDR, "Endpoint:", reg.endpoint)
 
-                // 2.5) Remove stale profiles to prevent “Update Required”
                 await VPNManager.shared.removeStaleProfiles()
 
-                // 3) Save profile
                 print("🛠️ Installing/updating profile…")
                 _ = try await VPNManager.shared.installOrUpdateTunnel(using: reg, regionName: regionName)
 
-                try? await Task.sleep(nanoseconds: 300_000_000) // grace
+                try? await Task.sleep(nanoseconds: 300_000_000)
 
-                // 4) Toggle connection
                 print("🔌 Toggling connection…")
                 try await VPNManager.shared.toggleConnection()
 
                 try? await Task.sleep(nanoseconds: 600_000_000)
                 await refreshStatus()
-                print("📶 Status refreshed.")
             } catch {
-                await MainActor.run { lastError = error.localizedDescription }
-                print("❌ Connect flow error:", error.localizedDescription)
+                let lower = error.localizedDescription.lowercased()
+                if lower.contains("subscription_inactive") || lower.contains("403") || lower.contains("forbidden") {
+                    await MainActor.run {
+                        lastError = "Your subscription is inactive or has expired. Please purchase or renew a plan to connect."
+                    }
+                } else {
+                    await MainActor.run { lastError = error.localizedDescription }
+                }
             }
             await MainActor.run { isBusy = false }
         }
     }
 
     private func handleLogout() {
+        showDropdown = false
+        isBusy = true
+
         Task {
+            // best-effort disconnect
+            if isConnected {
+                try? await VPNManager.shared.toggleConnection()
+            }
+
             let client = SupabaseManager.shared.client
             let deviceId = DeviceID.current()
+
+            // remove device record for this install (optional but tidy)
             try? await client.from("devices").delete().eq("device_id", value: deviceId).execute()
+            // sign out
             try? await client.auth.signOut()
+
+            await MainActor.run {
+                // reset local UI state
+                isConnected = false
+                selectedServer = "Helsinki"
+                mapRevealHeight = 0
+                isBusy = false
+
+                // Try to dismiss if this view was pushed/presented
+                dismiss()
+
+                // If dismiss does nothing (HomeView is root), hard switch to ContentView
+                if let window = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .flatMap({ $0.windows })
+                    .first(where: { $0.isKeyWindow }) {
+
+                    window.rootViewController = UIHostingController(rootView: ContentView()
+                        .tint(.blue)
+                        .preferredColorScheme(.dark)
+                    )
+                    window.makeKeyAndVisible()
+                }
+            }
         }
         print("Logging out…")
     }
@@ -422,13 +450,11 @@ struct HomeView: View {
         isBusy = true
         defer { isBusy = false }
         do {
-            print("🔌 Disconnecting…")
             try await VPNManager.shared.toggleConnection()
             try? await Task.sleep(nanoseconds: 400_000_000)
             await refreshStatus()
         } catch {
             await MainActor.run { lastError = error.localizedDescription }
-            print("❌ Disconnect flow error:", error.localizedDescription)
         }
     }
 
@@ -461,6 +487,8 @@ private struct CardBoundsKey: PreferenceKey {
         .tint(.blue)
         .preferredColorScheme(.dark)
 }
+
+
 
 
 
