@@ -17,13 +17,23 @@ struct HomeView: View {
     @State private var isConnected = false
     @State private var lastError: String?
 
+    // Map overlay animation
+    @State private var mapFullHeight: CGFloat = 0     // computed from Helsinki.top -> Tokyo.bottom
+    @State private var mapRevealHeight: CGFloat = 0   // animated from 0 -> mapFullHeight
+
+    // Disconnect confirm
+    @State private var showDisconnectConfirm = false
+
+    // Shared corner radius for cards/map/button
+    private let cardCorner: CGFloat = 16
+
     struct Server: Identifiable {
         let id = UUID()
         let name: String
         let tag: String?
     }
 
-    // Your server list (unchanged visuals)
+    // Your server list
     let servers: [Server] = [
         .init(name: "Helsinki",   tag: nil),
         .init(name: "New York",   tag: "Coming Soon"),
@@ -51,10 +61,21 @@ struct HomeView: View {
 
                         if showDropdown {
                             VStack(alignment: .leading, spacing: 0) {
-                                Button("Copy device pubkey", action: copyPubkey)
-                                    .foregroundColor(.white)
-                                    .padding(.vertical, 10)
-                                    .padding(.horizontal, 12)
+                                Button("My Account") {
+                                    // TODO: push account screen
+                                }
+                                .foregroundColor(.white)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 12)
+
+                                Divider().background(Color.white.opacity(0.2))
+
+                                Button("Report an issue") {
+                                    // TODO: open issue form
+                                }
+                                .foregroundColor(.white)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 12)
 
                                 Divider().background(Color.white.opacity(0.2))
 
@@ -91,22 +112,80 @@ struct HomeView: View {
                         .frame(width: 220, height: 32)
                         .aspectRatio(contentMode: .fit)
 
-                    Text("Select a server")
+                    Text(isConnected ? "Connected to \(regionNameForSelectedServer() ?? selectedServer)" : "Select a server")
                         .foregroundColor(.white)
                         .font(.headline)
+                        .animation(.easeInOut(duration: 0.25), value: isConnected)
 
-                    // Server selectors
-                    VStack(spacing: 12) {
-                        ForEach(servers) { server in
-                            serverCard(server,
-                                       isSelected: server.name == selectedServer)
-                                .contentShape(Rectangle())
-                                .onTapGesture { selectedServer = server.name }
+                    // ===== Server selectors with animated overlay & fade-out =====
+                    ZStack {
+                        // Server cards list (attach anchors on each card)
+                        VStack(spacing: 12) {
+                            ForEach(servers) { server in
+                                serverCard(server, isSelected: server.name == selectedServer)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if !isConnected { selectedServer = server.name }
+                                    }
+                                    .anchorPreference(key: CardBoundsKey.self, value: .bounds) { anchor in
+                                        [server.name: anchor]
+                                    }
+                            }
                         }
+                        // Fade servers out as map reveals
+                        .opacity(serverListOpacity)
+                        .animation(.easeInOut(duration: 0.8), value: mapRevealHeight)
+                        .allowsHitTesting(!isConnected) // don't let user tap cards while connected
+                        .zIndex(1) // map will sit above this
                     }
                     .frame(maxWidth: 320)
+                    // Read the collected anchors on the SAME container
+                    .overlayPreferenceValue(CardBoundsKey.self) { dict in
+                        GeometryReader { proxy in
+                            let hRect = dict["Helsinki"].map { proxy[$0] }
+                            let tRect = dict["Tokyo"].map    { proxy[$0] }
 
-                    // Connect / Disconnect button
+                            if let h = hRect, let t = tRect {
+                                let topY = h.minY
+                                let bottomY = t.maxY
+                                let fullHeight = max(0, bottomY - topY)
+
+                                // Swap to your asset name (e.g., "mapOverlay")
+                                let mapBase = Image("helsinki_map")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipShape(RoundedRectangle(cornerRadius: cardCorner, style: .continuous))
+
+                                mapBase
+                                    .frame(width: proxy.size.width, height: fullHeight)
+                                    .position(x: proxy.size.width / 2, y: (topY + bottomY) / 2)
+                                    // thin black hairline to kill any light halo
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: cardCorner, style: .continuous)
+                                            .stroke(Color.black.opacity(0.9), lineWidth: 0.6)
+                                    )
+                                    // ensure it draws above anything in this stack
+                                    .zIndex(10)
+                                    .onAppear {
+                                        self.mapFullHeight = fullHeight
+                                        if self.mapRevealHeight > fullHeight { self.mapRevealHeight = fullHeight }
+                                    }
+                                    .onChange(of: fullHeight) { newVal in
+                                        self.mapFullHeight = newVal
+                                        if self.mapRevealHeight > newVal { self.mapRevealHeight = newVal }
+                                    }
+                                    .mask(
+                                        VStack {
+                                            Spacer()
+                                            Rectangle().frame(height: mapRevealHeight) // animated
+                                        }
+                                    )
+                                    .animation(.easeInOut(duration: 1.0), value: mapRevealHeight)
+                            }
+                        }
+                    }
+
+                    // Connect / Connected button (original height; black + green glow when connected)
                     Button(action: handleConnect) {
                         HStack(spacing: 8) {
                             if isBusy { ProgressView().tint(.white) }
@@ -115,51 +194,107 @@ struct HomeView: View {
                                 .font(.headline)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                        .padding(.vertical, 14)  // keep original height
                         .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.accentColor)
+                            RoundedRectangle(cornerRadius: cardCorner)
+                                .fill(buttonFillColor)
                         )
-                        .shadow(color: Color.accentColor.opacity(0.35), radius: 10, y: 6)
+                        // subtle border when idle & available
+                        .overlay(
+                            Group {
+                                if isConnected {
+                                    // steady green glow outline
+                                    RoundedRectangle(cornerRadius: cardCorner)
+                                        .stroke(Color.green, lineWidth: 2)
+                                        .shadow(color: .green.opacity(0.5), radius: 8)
+                                        .shadow(color: .green.opacity(0.35), radius: 16)
+                                } else if isSelectedServerAvailable {
+                                    RoundedRectangle(cornerRadius: cardCorner)
+                                        .stroke(Color.accentColor.opacity(0.35), lineWidth: 1)
+                                } else {
+                                    RoundedRectangle(cornerRadius: cardCorner)
+                                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                }
+                            }
+                        )
+                        .shadow(color: (isConnected ? Color.black : buttonFillColor).opacity(0.35), radius: 10, y: 6)
                     }
-                    .disabled(regionNameForSelectedServer() == nil || isBusy)
-                    .opacity((regionNameForSelectedServer() == nil) ? 0.5 : 1.0)
+                    .disabled(!isSelectedServerAvailable || isBusy)
+                    .opacity(!isSelectedServerAvailable ? 0.6 : 1.0)
                     .frame(maxWidth: 320)
-
-                    // Status line
-                    Text(statusLine)
-                        .font(.footnote)
-                        .foregroundColor(.white.opacity(0.8))
+                    .animation(.spring(response: 0.28, dampingFraction: 0.9), value: isConnected)
                 }
 
                 Spacer()
             }
         }
+        // Error alert
         .alert("VPN Error", isPresented: .constant(lastError != nil), actions: {
             Button("OK") { lastError = nil }
         }, message: {
             Text(lastError ?? "")
         })
+        // Disconnect confirm alert
+        .alert("Disconnect?", isPresented: $showDisconnectConfirm) {
+            Button("Yes", role: .destructive) {
+                Task { await performDisconnect() }
+            }
+            Button("No", role: .cancel) {}
+        } message: {
+            Text("Are you sure you would like to disconnect from the server?")
+        }
         .onAppear {
             Task {
                 await VPNManager.shared.removeStaleProfiles()   // cleanup old profiles
                 await refreshStatus()                           // then refresh status
             }
         }
-
+        // Trigger slide when connection changes
+        .onChange(of: isConnected) { _, newValue in
+            if mapFullHeight > 0 {
+                if newValue {
+                    withAnimation(.easeInOut(duration: 1.1)) {
+                        mapRevealHeight = mapFullHeight
+                    }
+                } else {
+                    withAnimation(.easeInOut(duration: 0.7)) {
+                        mapRevealHeight = 0
+                    }
+                }
+            }
+        }
+        // If we connected before measurement finished, nudge animation when size arrives
+        .onChange(of: mapFullHeight) { _, newVal in
+            if newVal > 0, isConnected {
+                withAnimation(.easeInOut(duration: 1.1)) {
+                    mapRevealHeight = newVal
+                }
+            }
+        }
     }
 
     // MARK: - Derived UI
 
     private var buttonTitle: String {
-        guard regionNameForSelectedServer() != nil else { return "Coming Soon" }
+        guard isSelectedServerAvailable else { return "Coming Soon" }
         if isBusy { return isConnected ? "Disconnecting…" : "Connecting…" }
-        return isConnected ? "Disconnect" : "Connect"
+        return isConnected ? "Connected" : "Connect"
     }
 
-    private var statusLine: String {
-        guard let name = regionNameForSelectedServer() else { return "Selected region is not yet available." }
-        return isConnected ? "Connected to \(name)" : "Not connected"
+    private var buttonFillColor: Color {
+        if isConnected { return .black }                              // connected = black
+        return isSelectedServerAvailable ? Color.accentColor : .gray  // idle live vs. coming soon
+    }
+
+    // Opacity of the server list (1 → 0 as overlay reveals)
+    private var serverListOpacity: Double {
+        guard mapFullHeight > 0 else { return isConnected ? 0 : 1 }
+        let ratio = min(max(mapRevealHeight / mapFullHeight, 0), 1)
+        return Double(1 - ratio)
+    }
+
+    private var isSelectedServerAvailable: Bool {
+        regionNameForSelectedServer() != nil
     }
 
     // Only live region(s) return a name; coming-soon return nil to disable the button
@@ -170,7 +305,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Server Card (unchanged visuals)
+    // MARK: - Server Card (unchanged visuals except shared corner)
     @ViewBuilder
     private func serverCard(_ server: Server, isSelected: Bool) -> some View {
         HStack(spacing: 12) {
@@ -198,13 +333,13 @@ struct HomeView: View {
         }
         .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: cardCorner)
                 .fill(Color.black)
                 .shadow(color: isSelected ? Color.accentColor.opacity(0.25) : .black.opacity(0.8),
                         radius: 10, y: 6)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: cardCorner)
                 .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
         )
     }
@@ -224,6 +359,12 @@ struct HomeView: View {
     // MARK: - Actions
 
     private func handleConnect() {
+        // If already connected, ask for confirmation to disconnect
+        if isConnected {
+            showDisconnectConfirm = true
+            return
+        }
+
         guard let regionName = regionNameForSelectedServer() else { return }
         isBusy = true
         lastError = nil
@@ -250,8 +391,7 @@ struct HomeView: View {
                 print("🛠️ Installing/updating profile…")
                 _ = try await VPNManager.shared.installOrUpdateTunnel(using: reg, regionName: regionName)
 
-                // Small grace so the profile persists before starting
-                try? await Task.sleep(nanoseconds: 300_000_000)
+                try? await Task.sleep(nanoseconds: 300_000_000) // grace
 
                 // 4) Toggle connection
                 print("🔌 Toggling connection…")
@@ -268,18 +408,6 @@ struct HomeView: View {
         }
     }
 
-
-    private func copyPubkey() {
-        do {
-            let pub = try WGKeyStore.publicKeyBase64()
-            UIPasteboard.general.string = pub
-            lastError = "Device public key copied to clipboard."
-        } catch {
-            lastError = "Could not read/generate device key."
-        }
-        showDropdown = false
-    }
-
     private func handleLogout() {
         Task {
             let client = SupabaseManager.shared.client
@@ -288,6 +416,20 @@ struct HomeView: View {
             try? await client.auth.signOut()
         }
         print("Logging out…")
+    }
+
+    private func performDisconnect() async {
+        isBusy = true
+        defer { isBusy = false }
+        do {
+            print("🔌 Disconnecting…")
+            try await VPNManager.shared.toggleConnection()
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            await refreshStatus()
+        } catch {
+            await MainActor.run { lastError = error.localizedDescription }
+            print("❌ Disconnect flow error:", error.localizedDescription)
+        }
     }
 
     // Poll saved manager for a simple status read
@@ -306,11 +448,24 @@ struct HomeView: View {
     }
 }
 
+// MARK: - PreferenceKey to capture card bounds
+private struct CardBoundsKey: PreferenceKey {
+    static var defaultValue: [String: Anchor<CGRect>] = [:]
+    static func reduce(value: inout [String: Anchor<CGRect>], nextValue: () -> [String: Anchor<CGRect>]) {
+        value.merge(nextValue(), uniquingKeysWith: { $1 })
+    }
+}
+
 #Preview {
     HomeView()
         .tint(.blue)
         .preferredColorScheme(.dark)
 }
+
+
+
+
+
 
 
 
