@@ -44,9 +44,10 @@ enum PaymentMethod: String, CaseIterable, Identifiable {
 
 struct PaymentView: View {
     private let plans: [Plan] = [
-        .init(name: "1 Month",  price: "£2.99",  period: "/mo",   tag: nil),
-        .init(name: "3 Months", price: "£8.97",  period: "/3 mo", tag: "Popular"),
-        .init(name: "12 Months", price: "£34.99", period: "/yr",  tag: "Best Value")
+        .init(name: "1 Month",  price: "£4.99",  period: "/mo",   tag: nil),
+        .init(name: "3 Months", price: "£9.99",  period: "/3 mo", tag: nil),
+        .init(name: "12 Months", price: "£39.99", period: "/yr",  tag: "Popular"),
+        .init(name: "3 Years", price: "£99.99", period: "/yr",  tag: "Best Value")
     ]
 
     @State private var selectedPlanIndex = 1
