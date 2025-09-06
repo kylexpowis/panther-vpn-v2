@@ -16,6 +16,10 @@ struct SignupView: View {
     @State private var confirmPassword = ""
     @State private var selectedPlan = "1_month"
 
+    // Eye toggles
+    @State private var showPassword = false
+    @State private var showConfirmPassword = false
+
     // Alerts & flow
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
@@ -52,6 +56,7 @@ struct SignupView: View {
 
                     // MARK: Inputs
                     VStack(spacing: 12) {
+                        // Username (plain)
                         inputField(
                             text: $username,
                             placeholder: "Username",
@@ -60,21 +65,23 @@ struct SignupView: View {
                         )
                         .focused($focusedField, equals: .username)
 
-                        inputField(
+                        // Password (with eye)
+                        secureInputField(
                             text: $password,
                             placeholder: "Password",
-                            isSecure: true,
-                            isFocused: focusedField == .password
+                            isRevealed: $showPassword,
+                            isFocused: focusedField == .password,
+                            target: .password
                         )
-                        .focused($focusedField, equals: .password)
 
-                        inputField(
+                        // Confirm Password (with eye)
+                        secureInputField(
                             text: $confirmPassword,
                             placeholder: "Confirm Password",
-                            isSecure: true,
-                            isFocused: focusedField == .confirm
+                            isRevealed: $showConfirmPassword,
+                            isFocused: focusedField == .confirm,
+                            target: .confirm
                         )
-                        .focused($focusedField, equals: .confirm)
                     }
 
                     Text("Notice: Please make sure to note down your username and password, as we cannot recover or reset due to a security feature.")
@@ -160,7 +167,7 @@ struct SignupView: View {
             // Pre-payment confirmation
             .alert("Before you continue", isPresented: $showPrePaymentConfirm) {
                 Button("Yes") { performSignupAndRoute() }
-                Button("No", role: .cancel) { /* do nothing, just close */ }
+                Button("No", role: .cancel) { /* just close */ }
             } message: {
                 Text("Have you made a note of your username and password?")
             }
@@ -169,7 +176,7 @@ struct SignupView: View {
         .preferredColorScheme(.dark)
     }
 
-    // MARK: - Styled input field
+    // MARK: - Styled input field (plain or secure without eye)
     @ViewBuilder
     private func inputField(text: Binding<String>,
                             placeholder: String,
@@ -201,6 +208,63 @@ struct SignupView: View {
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.black)     // field background (black)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isFocused ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
+            )
+            .shadow(color: isFocused ? Color.accentColor.opacity(0.25) : .clear, radius: 10, y: 6)
+    }
+
+    // MARK: - Secure input with eye toggle
+    @ViewBuilder
+    private func secureInputField(text: Binding<String>,
+                                  placeholder: String,
+                                  isRevealed: Binding<Bool>,
+                                  isFocused: Bool,
+                                  target: Field) -> some View {
+
+        let field = Group {
+            if isRevealed.wrappedValue {
+                TextField(
+                    "",
+                    text: text,
+                    prompt: Text(placeholder).foregroundColor(.gray)
+                )
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled(true)
+                .focused($focusedField, equals: target)
+            } else {
+                SecureField(
+                    "",
+                    text: text,
+                    prompt: Text(placeholder).foregroundColor(.gray)
+                )
+                .focused($focusedField, equals: target)
+            }
+        }
+        .foregroundColor(.white)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+
+        field
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black)
+            )
+            // Eye button overlay
+            .overlay(
+                HStack {
+                    Spacer()
+                    Button {
+                        isRevealed.wrappedValue.toggle()
+                    } label: {
+                        Image(systemName: isRevealed.wrappedValue ? "eye.slash" : "eye")
+                            .foregroundColor(.white.opacity(0.85))
+                            .padding(.trailing, 10)
+                    }
+                    .buttonStyle(.plain)
+                }
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -267,6 +331,7 @@ struct SignupView: View {
 #Preview {
     SignupView()
 }
+
 
 
 
