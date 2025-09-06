@@ -1,4 +1,3 @@
-//
 //  HomeView.swift
 //  PantherVPN
 //
@@ -26,6 +25,10 @@ struct HomeView: View {
 
     // Disconnect confirm
     @State private var showDisconnectConfirm = false
+
+    // Navigation to other screens
+    @State private var goToDashboard = false
+    @State private var goToReport = false
 
     // Shared corner radius for cards/map/button
     private let cardCorner: CGFloat = 16
@@ -56,16 +59,18 @@ struct HomeView: View {
                     VStack(alignment: .trailing, spacing: 10) {
                         Button(action: { withAnimation(.spring(response: 0.25)) { showDropdown.toggle() } }) {
                             Image(systemName: "gearshape.fill")
-                                .foregroundColor(.white)
-                                .font(.title2)
-                                .padding(.top, 20)
-                                .padding(.trailing, 20)
+                                .foregroundColor(.white.opacity(0.30))   // ← a touch see-through
+                                .font(.system(size: 22, weight: .semibold))
                         }
+                        .padding(.top, 30)
+                        .padding(.trailing, 20)
+
 
                         if showDropdown {
                             VStack(alignment: .leading, spacing: 0) {
                                 Button("My Account") {
-                                    // TODO: push account screen
+                                    showDropdown = false
+                                    goToDashboard = true
                                 }
                                 .foregroundColor(.white)
                                 .padding(.vertical, 10)
@@ -74,7 +79,8 @@ struct HomeView: View {
                                 Divider().background(Color.white.opacity(0.2))
 
                                 Button("Report an issue") {
-                                    // TODO: open issue form
+                                    showDropdown = false
+                                    goToReport = true
                                 }
                                 .foregroundColor(.white)
                                 .padding(.vertical, 10)
@@ -172,7 +178,7 @@ struct HomeView: View {
                                         self.mapFullHeight = fullHeight
                                         if self.mapRevealHeight > fullHeight { self.mapRevealHeight = fullHeight }
                                     }
-                                    .onChange(of: fullHeight) { newVal in
+                                    .onChange(of: fullHeight) { _, newVal in
                                         self.mapFullHeight = newVal
                                         if self.mapRevealHeight > newVal { self.mapRevealHeight = newVal }
                                     }
@@ -227,6 +233,23 @@ struct HomeView: View {
 
                 Spacer()
             }
+
+            // Hidden NavigationLinks
+            NavigationLink(
+                destination: DashboardView()
+                    .tint(.blue)
+                    .preferredColorScheme(.dark),
+                isActive: $goToDashboard
+            ) { EmptyView() }
+            .opacity(0)
+
+            NavigationLink(
+                destination: ReportIssueView()
+                    .tint(.blue)
+                    .preferredColorScheme(.dark),
+                isActive: $goToReport
+            ) { EmptyView() }
+            .opacity(0)
         }
         // Error alert
         .alert("VPN Error", isPresented: .constant(lastError != nil), actions: {
@@ -234,7 +257,7 @@ struct HomeView: View {
         }, message: {
             Text(lastError ?? "")
         })
-        // Disconnect confirm alert
+        // Disconnect confirm alert — FIXED (removed extra closing ')')
         .alert("Disconnect?", isPresented: $showDisconnectConfirm) {
             Button("Yes", role: .destructive) {
                 Task { await performDisconnect() }
@@ -483,10 +506,15 @@ private struct CardBoundsKey: PreferenceKey {
 }
 
 #Preview {
-    HomeView()
-        .tint(.blue)
-        .preferredColorScheme(.dark)
+    NavigationStack {
+        HomeView()
+            .tint(.blue)
+            .preferredColorScheme(.dark)
+    }
 }
+
+
+
 
 
 

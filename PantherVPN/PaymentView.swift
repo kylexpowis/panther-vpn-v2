@@ -23,8 +23,6 @@ enum PaymentMethod: String, CaseIterable, Identifiable {
     case paypal = "PayPal"
     case btc = "BTC"
     case xmr = "XMR"
-    case sol = "SOL"
-    case xrp = "XRP"
 
     var id: String { rawValue }
 
@@ -34,8 +32,6 @@ enum PaymentMethod: String, CaseIterable, Identifiable {
         case .paypal: return "dollarsign.circle"
         case .btc:    return "bitcoinsign.circle"
         case .xmr:    return "lock.circle"
-        case .sol:    return "s.circle"
-        case .xrp:    return "x.circle"
         }
     }
 }
@@ -43,11 +39,13 @@ enum PaymentMethod: String, CaseIterable, Identifiable {
 // MARK: - Payment View
 
 struct PaymentView: View {
+    @Environment(\.dismiss) private var dismiss
+
     private let plans: [Plan] = [
         .init(name: "1 Month",  price: "£4.99",  period: "/mo",   tag: nil),
         .init(name: "3 Months", price: "£9.99",  period: "/3 mo", tag: nil),
         .init(name: "12 Months", price: "£39.99", period: "/yr",  tag: "Popular"),
-        .init(name: "3 Years", price: "£99.99", period: "/yr",  tag: "Best Value")
+        .init(name: "3 Years", price: "£109.99", period: "/yr",  tag: "Best Value")
     ]
 
     @State private var selectedPlanIndex = 1
@@ -62,8 +60,6 @@ struct PaymentView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-
-                // Empty placeholder instead of title
                 Color.clear.frame(height: 0)
 
                 // Header
@@ -73,7 +69,7 @@ struct PaymentView: View {
                         .foregroundColor(.white)
                     Text("Secure high-speed VPN. Cancel anytime.")
                         .font(.subheadline)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 .padding(.top, 12)
 
@@ -109,9 +105,9 @@ struct PaymentView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.accentColor))
+                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.blue))
                     .foregroundColor(.white)
-                    .shadow(color: Color.accentColor.opacity(0.35), radius: 8, y: 4) // softer glow
+                    .shadow(color: Color.blue.opacity(0.35), radius: 8, y: 4)
                 }
                 .disabled(isProcessing)
                 .padding(.top, 8)
@@ -125,7 +121,36 @@ struct PaymentView: View {
             }
             .padding(20)
         }
-        .background(Color.black.ignoresSafeArea())
+        // Dashboard-style background
+        .background(
+            LinearGradient(
+                colors: [.black, .black, Color.blue.opacity(0.5)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+        )
+        // Hide system nav bar and provide our own simple back button
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .top) {
+            HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "chevron.left")
+                            .font(.headline)
+                        Text("Back")
+                            .font(.headline)
+                    }
+                    .foregroundColor(.white)   // <-- no grey box/background
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 6)
+        }
         .sheet(isPresented: $showingCryptoSheet) {
             CryptoSheetView(
                 ticker: cryptoTicker,
@@ -140,10 +165,14 @@ struct PaymentView: View {
 
     @ViewBuilder
     private func planCard(_ plan: Plan, isSelected: Bool) -> some View {
+        let stroke = isSelected ? Color.blue.opacity(0.5) : Color.white.opacity(0.1)
+
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
-                    Text(plan.name).font(.headline).foregroundColor(.white)
+                    Text(plan.name)
+                        .font(.headline)
+                        .foregroundColor(.white)
                     if let tag = plan.tag {
                         Text(tag)
                             .font(.caption2).bold()
@@ -153,47 +182,53 @@ struct PaymentView: View {
                     }
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(plan.price).font(.system(size: 22, weight: .semibold)).foregroundColor(.white)
-                    Text(plan.period).font(.subheadline).foregroundColor(.gray)
+                    Text(plan.price)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundColor(.white)
+                    Text(plan.period)
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.6))
                 }
             }
             Spacer()
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(isSelected ? Color.accentColor : .gray)
+                .foregroundColor(isSelected ? .blue : .gray)
                 .font(.system(size: 24, weight: .semibold))
         }
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.black)
-                .shadow(color: isSelected ? Color.accentColor.opacity(0.25) : .black.opacity(0.8), radius: 10, y: 6)
+                .fill(Color.white.opacity(0.05))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
+                .stroke(stroke, lineWidth: isSelected ? 1.5 : 1)
         )
     }
 
     @ViewBuilder
     private func methodTile(_ method: PaymentMethod, isSelected: Bool) -> some View {
+        let stroke = isSelected ? Color.blue.opacity(0.5) : Color.white.opacity(0.1)
+
         HStack(spacing: 12) {
             Image(systemName: method.systemIcon)
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(.white)
-            Text(method.rawValue).font(.headline).foregroundColor(.white)
+            Text(method.rawValue)
+                .font(.headline)
+                .foregroundColor(.white)
             Spacer()
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(isSelected ? Color.accentColor : .gray)
+                .foregroundColor(isSelected ? .blue : .gray)
         }
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.black)
-                .shadow(color: isSelected ? Color.accentColor.opacity(0.25) : .black.opacity(0.8), radius: 10, y: 6)
+                .fill(Color.white.opacity(0.05))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.6), lineWidth: 1)
+                .stroke(stroke, lineWidth: 1)
         )
     }
 
@@ -214,7 +249,7 @@ struct PaymentView: View {
             isProcessing = false
             openURL("https://your-backend.example.com/paypal/checkout?plan=\(plan.name)")
 
-        case .btc, .xmr, .sol, .xrp:
+        case .btc, .xmr:
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                 isProcessing = false
                 switch selectedMethod {
@@ -226,14 +261,6 @@ struct PaymentView: View {
                     cryptoTicker = "XMR"
                     cryptoAmount = "0.12"
                     cryptoAddress = "47gYourMoneroIntegratedAddrFromBackend"
-                case .sol:
-                    cryptoTicker = "SOL"
-                    cryptoAmount = "1.25"
-                    cryptoAddress = "YourSolanaWalletAddressFromBackend"
-                case .xrp:
-                    cryptoTicker = "XRP"
-                    cryptoAmount = "22.5"
-                    cryptoAddress = "YourRippleWalletAddressFromBackend"
                 default: break
                 }
                 showingCryptoSheet = true
@@ -267,16 +294,23 @@ struct CryptoSheetView: View {
             if !amount.isEmpty {
                 Text("Amount: \(amount) \(ticker)")
                     .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
 
             QRView(string: address)
                 .frame(width: 200, height: 200)
                 .padding(8)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.black).shadow(color: Color.accentColor.opacity(0.3), radius: 8, y: 6))
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white.opacity(0.06))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                        )
+                )
 
             VStack(spacing: 8) {
-                Text("Address").font(.footnote).foregroundColor(.gray)
+                Text("Address").font(.footnote).foregroundColor(.white.opacity(0.7))
                 Text(address)
                     .font(.footnote)
                     .foregroundColor(.white)
@@ -290,10 +324,11 @@ struct CryptoSheetView: View {
                 copied = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { copied = false }
             } label: {
-                Label(copied ? "Copied" : "Copy Address", systemImage: copied ? "checkmark.circle.fill" : "doc.on.doc")
+                Label(copied ? "Copied" : "Copy Address",
+                      systemImage: copied ? "checkmark.circle.fill" : "doc.on.doc")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.accentColor))
+                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.blue))
                     .foregroundColor(.white)
             }
             .padding(.top, 6)
@@ -301,7 +336,13 @@ struct CryptoSheetView: View {
             Spacer(minLength: 8)
         }
         .padding(20)
-        .background(Color.black)
+        .background(
+            LinearGradient(
+                colors: [.black, .black, Color.blue.opacity(0.5)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
     }
 }
 
@@ -334,14 +375,7 @@ struct QRView: View {
     }
 }
 
-// MARK: - Preview
 
-struct PaymentView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack { PaymentView() }
-            .tint(.blue)
-            .preferredColorScheme(.dark)
-    }
-}
+
 
 
